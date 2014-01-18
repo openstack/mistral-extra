@@ -1,4 +1,3 @@
-mistral-extra
-=============
-
-Additional tools and examples for Mistral
+Mistral Extras
+================
+Contains example applications additional tools for Mistral.
