@@ -18,8 +18,8 @@ import pecan
 
 
 app = {
-    'root': 'demo_app.api.controllers.root.RootController',
-    'modules': ['demo_app.api'],
+    'root': 'simple_app.api.controllers.root.RootController',
+    'modules': ['simple_app.api'],
     'debug': True,
 }
 

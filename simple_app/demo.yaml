@@ -1,6 +1,6 @@
 Services:
    MyRest:
-     type: REST_API
+     type: MISTRAL_REST_API
      parameters:
          baseUrl: http://localhost:8988
      actions:
