@@ -21,7 +21,7 @@ import pecan
 from wsme import types as wtypes
 import wsmeext.pecan as wsme_pecan
 
-from simple_app import tasks
+from examples.webhooks import tasks
 
 
 LOG = logging.getLogger(__name__)

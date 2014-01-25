@@ -19,7 +19,7 @@ import pkg_resources as pkg
 
 from mistralclient.api import client
 
-from simple_app import version
+from examples.webhooks import version
 
 MISTRAL_URL = "http://localhost:8989/v1"
 client.Client.authenticate = mock.MagicMock(return_value=(MISTRAL_URL,
@@ -40,8 +40,10 @@ def upload_workbook():
                                 description="My test workbook",
                                 tags=["test"])
     print("Uploading workbook definition...\n")
+
     definition = get_workbook_definition()
     CLIENT.workbooks.upload_definition(WB_NAME, definition)
+
     print definition
     print("\nUploaded.")
 

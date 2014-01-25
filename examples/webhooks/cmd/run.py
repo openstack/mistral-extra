@@ -29,9 +29,9 @@ from wsgiref import simple_server
 
 from oslo.config import cfg
 
-from simple_app import config
-from simple_app.api import app
-from simple_app.api import client
+from examples.webhooks import config
+from examples.webhooks.api import app
+from examples.webhooks.api import client
 
 
 eventlet.monkey_patch(
@@ -39,7 +39,6 @@ eventlet.monkey_patch(
 
 logging.basicConfig(level=logging.WARN)
 LOG = logging.getLogger(__name__)
-CLIENT = client.CLIENT
 
 
 def upload_wb_and_start():

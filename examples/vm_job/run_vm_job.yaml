@@ -1,0 +1,97 @@
+Workflow:
+  tasks:
+    runJob:
+      requires:
+        createVM: $.vm_ip != null
+      action: DemoApp:runJob
+      on-success: deleteVM
+      on-error: sendJobError
+
+    deleteVM:
+      action: Nova:deleteVM
+      on-finish: end
+
+    sendJobError:
+      action: std:email
+      parameters:
+        address: admin@mycompany.com
+        subject: Workflow error
+        body: Error occurred while running a VM job in execution {$.execution.id}
+      on-finish: deleteVM
+
+# Creating a VM and waiting till it is up (an IP address has been assigned).
+
+    createVM:
+      action: Nova:createVM
+      on-success: waitForIP
+      on-error: sendCreateVMError
+
+    waitForIP:
+      action: std:repeat
+      parameters:
+        task: getIP
+        retries: 5
+        delay: 3000
+        break-on: $.vm_ip != null
+      on-finish:
+        sendCreateVMError: $.vm_ip = null
+      on-error:
+        sendCreateVMError 
+
+    getIP:
+      action: Nova:getIP
+
+    sendCreateVMError:
+      action: std:email
+      parameters:
+        address: admin@mycompany.com
+        subject: Workflow error
+        body: Failed to create a VM in execution {$.execution.id}
+      on-finish: end
+
+# Terminal no-op task.
+
+    end:
+      action: Util:no-op
+
+#  events:
+#    runJob:
+#      type: periodic
+#      tasks: runJob
+#      parameters:
+#        cron-pattern: "*/1 * * * *"
+
+Services:
+  Nova:
+    type: REST_API
+    parameters:
+      baseUrl: {$.novaURL}
+    actions:
+      createVM:
+        parameters:
+          url: /servers/{$.vm_id}
+          method: POST
+        response:
+          select: $.server.id
+          store-as: vm_id
+      getIP:
+        parameters:
+          url: /servers/{$.vm_id}
+          method: GET
+        response:
+          select: $.server.accessIPv4
+          store-as: vm_ip 
+      deleteVM:
+        parameters:
+          url: /servers/{$.vm_id}
+          method: DELETE
+
+  DemoAPP:
+    type: MISTRAL_REST_API
+    parameters:
+      baseUrl: http://{$.vm_ip}:8080/
+    actions:
+      runJob:
+        parameters:
+          url: /runJob
+          method: GET

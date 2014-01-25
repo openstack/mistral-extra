@@ -20,9 +20,9 @@ from pecan import rest
 from wsme import types as wtypes
 import wsmeext.pecan as wsme_pecan
 
-from simple_app.api.controllers import resource
-from simple_app.api.controllers import tasks
-from simple_app.api import client
+from examples.webhooks.api.controllers import resource
+from examples.webhooks.api.controllers import tasks
+from examples.webhooks.api import client
 
 LOG = logging.getLogger(__name__)
 

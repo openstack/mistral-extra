@@ -14,23 +14,29 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from oslo.config import cfg
-
-from simple_app import version
+import pecan
 
 
-api_opts = [
-    cfg.StrOpt('host', default='0.0.0.0', help='Simple-app API server host'),
-    cfg.IntOpt('port', default=8988, help='Simple-app API server port')
-]
-
-CONF = cfg.CONF
-CONF.register_opts(api_opts, group='api')
+app = {
+    'root': 'examples.webhooks.api.controllers.root.RootController',
+    'modules': ['examples.webhooks.api'],
+    'debug': True,
+}
 
 
-def parse_args(args=None, usage=None, default_config_files=None):
-    CONF(args=args,
-         project='mistral-demo',
-         version=version,
-         usage=usage,
-         default_config_files=default_config_files)
+def get_pecan_config():
+    # Set up the pecan configuration.
+    return pecan.configuration.conf_from_dict(app)
+
+
+def setup_app(config=None):
+    if not config:
+        config = get_pecan_config()
+
+    app_conf = dict(config)
+
+    return pecan.make_app(
+        app_conf.pop('root'),
+        logging=getattr(config, 'logging', {}),
+        **app_conf
+    )
