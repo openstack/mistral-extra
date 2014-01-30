@@ -8,46 +8,38 @@ Services:
            parameters:
                url: /tasks/task1
                method: GET
-           task-parameters:
 
          task2:
            parameters:
                url: /tasks/task2
                method: GET
-           task-parameters:
 
          task3:
            parameters:
                url: /tasks/task3
                method: GET
-           task-parameters:
 
          task4:
            parameters:
                url: /tasks/task4
                method: GET
-           task-parameters:
 
 Workflow:
    tasks:
      task1:
          action: MyRest:task1
-         parameters:
 
      task2:
          requires: [task1]
          action: MyRest:task2
-         parameters:
 
      task3:
         requires: [task1]
         action: MyRest:task3
-        parameters:
 
      task4:
         requires: [task2, task3]
         action: MyRest:task4
-        parameters:
 
    events:
      task4:
