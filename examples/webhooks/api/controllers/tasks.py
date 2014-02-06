@@ -36,10 +36,10 @@ class Controller(rest.RestController):
 
         values = {
             'tasks': [
-                'task1',
-                'task2',
-                'task3',
-                'task4'
+                'put_service_on_hold',
+                'backup_user_data',
+                'backup_service_data',
+                'execute_backup'
             ]
         }
 
@@ -50,7 +50,7 @@ class Controller(rest.RestController):
 
     @wsme_pecan.wsexpose(wtypes.text, wtypes.text)
     def get(self, name):
-        print("Task '%s' is starting" % name)
+        print("Task '%s' is running." % name)
 
         value = "Task %s accepted" % name
         tasks.start_task(**self.get_mistral_headers())

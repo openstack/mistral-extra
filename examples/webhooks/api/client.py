@@ -29,7 +29,7 @@ CLIENT = client.Client(mistral_url=MISTRAL_URL,
 
 
 WB_NAME = "myWorkbook"
-TARGET_TASK = "task4"
+TARGET_TASK = "execute_backup"
 
 
 def upload_workbook():

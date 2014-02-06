@@ -34,4 +34,4 @@ def finish_task(task_id, execution_id, workbook_name):
 
     task = CLIENT.tasks.update(workbook_name, execution_id,
                                task_id, "SUCCESS")
-    print("Task %s - SUCCESS" % task.name)
+    print("Task '%s' - SUCCESS" % task.name)

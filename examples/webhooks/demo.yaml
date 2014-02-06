@@ -4,46 +4,46 @@ Services:
      parameters:
          baseUrl: http://localhost:8988
      actions:
-         task1:
+         put_service_on_hold:
            parameters:
-               url: /tasks/task1
+               url: /tasks/put_service_on_hold
                method: GET
 
-         task2:
+         backup_user_data:
            parameters:
-               url: /tasks/task2
+               url: /tasks/backup_user_data
                method: GET
 
-         task3:
+         backup_service_data:
            parameters:
-               url: /tasks/task3
+               url: /tasks/backup_service_data
                method: GET
 
-         task4:
+         execute_backup:
            parameters:
-               url: /tasks/task4
+               url: /tasks/execute_backup
                method: GET
 
 Workflow:
    tasks:
-     task1:
-         action: MyRest:task1
+     put_service_on_hold:
+         action: MyRest:put_service_on_hold
 
-     task2:
-         requires: [task1]
-         action: MyRest:task2
+     backup_user_data:
+         requires: [put_service_on_hold]
+         action: MyRest:backup_user_data
 
-     task3:
-        requires: [task1]
-        action: MyRest:task3
+     backup_service_data:
+        requires: [put_service_on_hold]
+        action: MyRest:backup_service_data
 
-     task4:
-        requires: [task2, task3]
-        action: MyRest:task4
+     execute_backup:
+        requires: [backup_user_data, backup_service_data]
+        action: MyRest:execute_backup
 
    events:
-     task4:
+     execute_backup:
         type: periodic
-        tasks: task4
+        tasks: execute_backup
         parameters:
             cron-pattern: "*/1 * * * *"
