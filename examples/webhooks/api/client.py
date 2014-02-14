@@ -29,7 +29,7 @@ CLIENT = client.Client(mistral_url=MISTRAL_URL,
 
 
 WB_NAME = "myWorkbook"
-TARGET_TASK = "execute_backup"
+TASK = "execute_backup"
 
 
 def upload_workbook():
@@ -57,6 +57,6 @@ def start_execution():
     import threading
     t = threading.Thread(target=CLIENT.executions.create,
                          kwargs={'workbook_name': WB_NAME,
-                                 'target_task': TARGET_TASK})
+                                 'task': TASK})
     t.start()
     return "accepted"

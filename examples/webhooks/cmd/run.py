@@ -50,7 +50,7 @@ def upload_wb_and_start():
         LOG.error("Error. Mistral service probably is not working now")
         sys.exit(1)
 
-    print("Start execution for: %s" % client.TARGET_TASK)
+    print("Start execution for: %s" % client.TASK)
 
     client.start_execution()
 

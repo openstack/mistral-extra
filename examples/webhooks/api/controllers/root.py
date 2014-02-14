@@ -47,7 +47,7 @@ class APIVersion(resource.Resource):
 class StartController(rest.RestController):
     @wsme_pecan.wsexpose(wtypes.text)
     def get(self):
-        print("Start execution for: %s" % client.TARGET_TASK)
+        print("Start execution for: %s" % client.TASK)
 
         return client.start_execution()
 
