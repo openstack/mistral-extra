@@ -7,3 +7,4 @@ WSME>=0.5b6
 argparse
 oslo.config>=1.2.0
 python-keystoneclient
+flask
