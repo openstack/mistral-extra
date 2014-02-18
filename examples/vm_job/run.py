@@ -23,6 +23,9 @@ from mistralclient.api import client as cl
 MISTRAL_URL = "http://localhost:8989/v1"
 WORKBOOK_NAME = "vm_job_workbook"
 WORKBOOK_DEFINITION_FILE_NAME = "run_vm_job.yaml"
+CONTEXT = {
+    'image_id': '123'  # TODO(rakhmerov): needs to be calculated?
+}
 
 cl.Client.authenticate = mock.MagicMock(return_value=(MISTRAL_URL,
                                                       "", "", ""))
@@ -58,8 +61,8 @@ def upload_workbook_definition(wb_name, file_name):
           CLIENT.workbooks.get_definition(wb_name)
 
 
-def create_execution(wb_name, task_name):
-    execution = CLIENT.executions.create(wb_name, task_name)
+def create_execution(wb_name, task_name, context):
+    execution = CLIENT.executions.create(wb_name, task_name, context)
 
     print "Created execution: %s" % execution
 
@@ -68,7 +71,7 @@ def main():
     """Main script."""
     create_workbook(WORKBOOK_NAME)
     upload_workbook_definition(WORKBOOK_NAME, WORKBOOK_DEFINITION_FILE_NAME)
-    create_execution(WORKBOOK_NAME, "runJob")
+    create_execution(WORKBOOK_NAME, "runJob", CONTEXT)
 
 
 if __name__ == '__main__':
