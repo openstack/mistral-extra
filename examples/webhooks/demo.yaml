@@ -23,6 +23,15 @@ Services:
            parameters:
                url: /tasks/execute_backup
                method: GET
+   Email:
+      type: SEND_EMAIL
+      parameters:
+         smtp_server: localhost:10025
+         from: mistral@example.com
+         # use password if smtpd requires TLS authenitcation
+         # password: None
+      actions:
+         send_email: ''
 
 Workflow:
    tasks:
@@ -34,12 +43,24 @@ Workflow:
          action: MyRest:backup_user_data
 
      backup_service_data:
-        requires: [put_service_on_hold]
-        action: MyRest:backup_service_data
+         requires: [put_service_on_hold]
+         action: MyRest:backup_service_data
+
+     send_email:
+         requires: [backup_service_data, backup_user_data]
+         action: Email:send_email
+         parameters:
+            to: [mistral@example.com, boss@example.com]
+            subject: Backup complete
+            body: |
+               Congratulations, the backup is complete
+
+               -- Thanks, Mistral Team.
 
      execute_backup:
-        requires: [backup_user_data, backup_service_data]
-        action: MyRest:execute_backup
+         requires: [backup_user_data, backup_service_data, send_email]
+         action: MyRest:execute_backup
+
 
    events:
      execute_backup:

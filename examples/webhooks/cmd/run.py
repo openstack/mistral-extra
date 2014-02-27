@@ -24,8 +24,11 @@ import os
 from requests import exceptions
 import sys
 import threading
+import asyncore
 from time import sleep
 from wsgiref import simple_server
+from SocketServer import ThreadingMixIn
+from smtpd import DebuggingServer
 
 from oslo.config import cfg
 
@@ -55,6 +58,16 @@ def upload_wb_and_start():
     client.start_execution()
 
 
+class ThreadingWSGIServer(ThreadingMixIn, simple_server.WSGIServer):
+    pass
+
+
+def _run_smtpd():
+    #TODO: get address/port from demo.yaml smtp_server to match.
+    DebuggingServer(('localhost', 10025), None)
+    asyncore.loop()
+
+
 def main():
     try:
         config.parse_args()
@@ -62,18 +75,23 @@ def main():
         host = cfg.CONF.api.host
         port = cfg.CONF.api.port
 
-        server = simple_server.make_server(host, port, app.setup_app())
+        server = simple_server.make_server(
+            host, port, app.setup_app(), ThreadingWSGIServer)
 
         LOG.info("Demo app API is serving on http://%s:%s (PID=%s)" %
                  (host, port, os.getpid()))
-
         server.serve_forever()
     except RuntimeError, e:
         sys.stderr.write("ERROR: %s\n" % e)
         sys.exit(1)
+    except KeyboardInterrupt:
+        sys.exit(0)
 
 
 if __name__ == '__main__':
     upload_thread = threading.Thread(target=upload_wb_and_start)
     upload_thread.run()
+    smtp_thread = threading.Thread(target=_run_smtpd)
+    smtp_thread.daemon = True
+    smtp_thread.start()
     main()
