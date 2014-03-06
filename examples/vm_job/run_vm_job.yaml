@@ -54,12 +54,12 @@ Workflow:
     end:
       action: Util:no-op
 
-#  events:
-#    runJob:
-#      type: periodic
-#      tasks: runJob
-#      parameters:
-#        cron-pattern: "*/1 * * * *"
+#triggers:
+#  runJob:
+#    type: periodic
+#    tasks: runJob
+#    parameters:
+#      cron-pattern: "*/1 * * * *"
 
 Services:
   Nova:

@@ -62,9 +62,9 @@ Workflow:
          action: MyRest:execute_backup
 
 
-   events:
-     execute_backup:
-        type: periodic
-        tasks: execute_backup
-        parameters:
-            cron-pattern: "*/1 * * * *"
+triggers:
+  execute_backup:
+    type: periodic
+    tasks: execute_backup
+    parameters:
+      cron-pattern: "*/1 * * * *"
