@@ -15,21 +15,17 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-# TODO(rakhmerov): remove "mock" dependency later
-import mock
 from mistralclient.api import client as cl
 
 
 MISTRAL_URL = "http://localhost:8989/v1"
 WORKBOOK_NAME = "vm_job_workbook"
 WORKBOOK_DEFINITION_FILE_NAME = "run_vm_job.yaml"
-CONTEXT = {
-    'image_id': '123'  # TODO(rakhmerov): needs to be calculated?
-}
+CONTEXT = """{
+    "image_id": "123"
+}"""  # TODO(rakhmerov): needs to be calculated?
 
-cl.Client.authenticate = mock.MagicMock(return_value=(MISTRAL_URL,
-                                                      "", "", ""))
-CLIENT = cl.Client(mistral_url=MISTRAL_URL, project_name="mistral_demo")
+CLIENT = cl.Client(mistral_url=MISTRAL_URL)
 
 
 def create_workbook(wb_name):

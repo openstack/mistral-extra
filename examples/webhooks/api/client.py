@@ -14,7 +14,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-import mock
 import pkg_resources as pkg
 
 from mistralclient.api import client
@@ -22,10 +21,7 @@ from mistralclient.api import client
 from examples.webhooks import version
 
 MISTRAL_URL = "http://localhost:8989/v1"
-client.Client.authenticate = mock.MagicMock(return_value=(MISTRAL_URL,
-                                                          "", "", ""))
-CLIENT = client.Client(mistral_url=MISTRAL_URL,
-                       project_name="mistral_demo")
+CLIENT = client.Client(mistral_url=MISTRAL_URL)
 
 
 WB_NAME = "myWorkbook"
