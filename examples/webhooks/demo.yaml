@@ -31,7 +31,8 @@ Services:
          # use password if smtpd requires TLS authenitcation
          # password: None
       actions:
-         send_email: ''
+         send_email:
+           parameters:
 
 Workflow:
    tasks:
