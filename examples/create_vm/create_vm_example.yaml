@@ -1,0 +1,36 @@
+# For get this work, please provide next properties to execution context:
+# - novaUrl  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
+# - server_name ## Name you want to give to new instance
+# - image_id  ## image id from Glance service
+# - flavor_id ## flavor id - type of instance hardware
+# - network_id ## network id you want to connect your new instance
+
+Services:
+  Nova:
+    type: REST_API
+    parameters:
+      baseUrl: $.novaUrl
+    actions:
+      create-vm:
+        parameters:
+          url: /servers
+          method: POST
+        output:
+          vm_id: $.server.id
+        headers:
+          X-Auth-Token: $.auth_token
+          Content-Type: application/json
+
+Workflow:
+  tasks:
+    create-vm:
+      action: Nova:create-vm
+      parameters:
+        server:
+          name: $.server_name
+          image_ref: $.image_id
+          flavor_ref: $.flavor_id
+          networks:
+            [uuid: $.network_id]
+      publish:
+        vm_id: vm_id
