@@ -1,45 +1,91 @@
+# For get this work, please provide next properties to execution context:
+# - novaUrl  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
+# - server_name ## Name you want to give to new instance
+# - image_id  ## image id from Glance service
+# - flavor_id ## flavor id - type of instance hardware
+# - network_id ## network id you want to connect your new instance
+# - ssh_username ## username of your VM
+# - ssh_password ## password to your VM
+
 Workflow:
   tasks:
-    runJob:
-      requires:
-        createVM: $.vm_ip != null
-      action: DemoApp:runJob
-      on-success: deleteVM
-      on-error: sendJobError
-
     deleteVM:
-      action: Nova:deleteVM
-      on-finish: end
-
-    sendJobError:
-      action: std:email
+      action: Nova.deleteVM
       parameters:
-        address: admin@mycompany.com
-        subject: Workflow error
-        body: Error occurred while running a VM job in execution {$.execution.id}
-      on-finish: deleteVM
+        novaUrl: $.novaUrl
+        project_id: $.project_id
+        auth_token: $.auth_token
+        vm_id: $.vm_id
 
 # Creating a VM and waiting till it is up (an IP address has been assigned).
 
     createVM:
-      action: Nova:createVM
+      action: Nova.createVM
+      parameters:
+        server_name: $.server_name
+        image_id: $.image_id
+        flavor_id: $.flavor_id
+        novaUrl: $.novaUrl
+        project_id: $.project_id
+        auth_token: $.auth_token
+      publish:
+        vm_id: vm_id
       on-success: waitForIP
       on-error: sendCreateVMError
 
     waitForIP:
-      action: std:repeat
+      action: Nova.getIP
+      retry:
+        count: 10
+        delay: 10
+      publish:
+        vm_ip: vm_ip
       parameters:
-        task: getIP
-        retries: 5
-        delay: 3000
-        break-on: $.vm_ip != null
-      on-finish:
-        sendCreateVMError: $.vm_ip = null
-      on-error:
-        sendCreateVMError 
+        novaUrl: $.novaUrl
+        project_id: $.project_id
+        auth_token: $.auth_token
+        vm_id: $.vm_id
+      on-success: waitSSH
+      on-error: deleteVM
 
-    getIP:
-      action: Nova:getIP
+# Waiting till VM's OS is up sending SSH simple commands.
+
+    waitSSH:
+      action: Ssh.waitSSH
+      retry:
+        count: 10
+        delay: 10
+      parameters:
+        username: $.ssh_username
+        password: $.ssh_password
+        vm_ip: $.vm_ip
+      on-success: runServer
+
+# When SSH is up, we are able to run the server on VM.
+
+    runServer:
+      action: Ssh.runServer
+      parameters:
+        vm_ip: $.vm_ip
+        username: $.ssh_username
+        password: $.ssh_password
+      on-success: calcSumm
+      on-error: deleteVM
+
+# Send HTTP request on server and calc the result.
+
+    calcSumm:
+      action: Server.calcSumm
+      parameters:
+        arguments:
+          - 32
+          - 45
+          - 27
+      publish:
+        result: summ_result
+      on-finish: deleteVM
+
+# In case of createVM error send e-mail with error message.
 
     sendCreateVMError:
       action: std:email
@@ -47,12 +93,6 @@ Workflow:
         address: admin@mycompany.com
         subject: Workflow error
         body: Failed to create a VM in execution {$.execution.id}
-      on-finish: end
-
-# Terminal no-op task.
-
-    end:
-      action: Util:no-op
 
 #triggers:
 #  runJob:
@@ -61,37 +101,100 @@ Workflow:
 #    parameters:
 #      cron-pattern: "*/1 * * * *"
 
-Services:
+Namespaces:
   Nova:
-    type: REST_API
-    parameters:
-      baseUrl: {$.novaURL}
+  # Nova actions for creating VM, retrieving IP and VM deleting.
     actions:
       createVM:
-        parameters:
-          url: /servers/{$.vm_id}
+        class: std.http
+        base-parameters:
+          url: '{$.novaUrl}/{$.project_id}/servers'
           method: POST
-        response:
-          select: $.server.id
-          store-as: vm_id
-      getIP:
+          headers:
+            X-Auth-Token: $.auth_token
+            Content-Type: application/json
+          body:
+            server:
+              name: $.server_name
+              imageRef: $.image_id
+              flavorRef: $.flavor_id
+        output:
+          vm_id: $.content.server.id
         parameters:
-          url: /servers/{$.vm_id}
-          method: GET
-        response:
-          select: $.server.accessIPv4
-          store-as: vm_ip 
-      deleteVM:
-        parameters:
-          url: /servers/{$.vm_id}
-          method: DELETE
+          - novaUrl
+          - project_id
+          - auth_token
+          - server_name
+          - image_id
+          - flavor_id
 
-  DemoAPP:
-    type: MISTRAL_REST_API
-    parameters:
-      baseUrl: http://{$.vm_ip}:8080/
-    actions:
-      runJob:
-        parameters:
-          url: /runJob
+      getIP:
+        class: std.http
+        base-parameters:
+          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
           method: GET
+          headers:
+            X-Auth-Token: $.auth_token
+        output:
+          vm_ip: "$.content.server.addresses.novanetwork.where($.'OS-EXT-IPS:type' = 'floating')[0].addr"
+        parameters:
+          - vm_id
+          - auth_token
+          - novaUrl
+          - project_id
+
+      deleteVM:
+        class: std.http
+        base-parameters:
+          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
+          method: DELETE
+          headers:
+            X-Auth-Token: $.auth_token
+        parameters:
+          - auth_token
+          - vm_id
+          - novaUrl
+          - project_id
+
+  Server:
+    actions:
+      # HTTP request to the server.
+      calcSumm:
+        class: std.http
+        base-parameters:
+          url: 'http://{$.vm_ip}:5000/summ'
+          method: POST
+          body:
+            arguments: $.arguments
+        output:
+          summ_result: $.content.result
+        parameters:
+          - arguments
+
+  Ssh:
+    actions:
+      # Simple SSH command.
+      waitSSH:
+        class: std.ssh
+        base-parameters:
+          host: $.vm_ip
+          cmd: 'ls -l'
+          username: $.username
+          password: $.password
+        parameters:
+          - vm_ip
+          - username
+          - password
+
+      # SSH command to run the server.
+      runServer:
+        class: std.ssh
+        base-parameters:
+          host: $.vm_ip
+          cmd: 'nohup python ~/web_app.py > web_app.log &'
+          username: $.username
+          password: $.password
+        parameters:
+          - vm_ip
+          - username
+          - password
