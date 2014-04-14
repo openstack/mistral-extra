@@ -20,12 +20,18 @@ host = "0.0.0.0"
 port = 5000
 
 
-@app.route('/summ')
+@app.route('/summ', methods=["POST"])
 def summ():
     summ = 0
-    args = flask.request.args.get('arguments', [], type=list)
+    args = flask.request.data
 
-    for a in args:
+    try:
+        args_list = flask.json.loads(args).get('arguments')
+    except:
+        return (403, "Please, specify list of arguments in the request body"
+                " in form '{\"arguments\": [arg1, arg2, .., argN]}'")
+
+    for a in args_list:
         try:
             summ += int(a)
         except:
