@@ -1,67 +1,58 @@
-Services:
-   MyRest:
-     type: MISTRAL_REST_API
-     parameters:
-         baseUrl: http://localhost:8988
-     actions:
-         put_service_on_hold:
-           parameters:
-               url: /tasks/put_service_on_hold
-               method: GET
+Namespaces:
+  MyRest:
+    actions:
+      put_service_on_hold:
+        class: std.mistral_http
+        base-parameters:
+          url: http://localhost:8988/tasks/put_service_on_hold
 
-         backup_user_data:
-           parameters:
-               url: /tasks/backup_user_data
-               method: GET
+      backup_user_data:
+        class: std.mistral_http
+        base-parameters:
+          url: http://localhost:8988/tasks/backup_user_data
 
-         backup_service_data:
-           parameters:
-               url: /tasks/backup_service_data
-               method: GET
+      backup_service_data:
+        class: std.mistral_http
+        base-parameters:
+          url: http://localhost:8988/tasks/backup_service_data
 
-         execute_backup:
-           parameters:
-               url: /tasks/execute_backup
-               method: GET
-   Email:
-      type: SEND_EMAIL
-      parameters:
-         smtp_server: localhost:10025
-         from: mistral@example.com
-         # use password if smtpd requires TLS authenitcation
-         # password: None
-      actions:
-         send_email:
-           parameters:
+      execute_backup:
+        class: std.mistral_http
+        base-parameters:
+          url: http://localhost:8988/tasks/execute_backup
 
 Workflow:
-   tasks:
-     put_service_on_hold:
-         action: MyRest:put_service_on_hold
+  tasks:
+    put_service_on_hold:
+      action: MyRest.put_service_on_hold
 
-     backup_user_data:
-         requires: [put_service_on_hold]
-         action: MyRest:backup_user_data
+    backup_user_data:
+      requires: [put_service_on_hold]
+      action: MyRest.backup_user_data
 
-     backup_service_data:
-         requires: [put_service_on_hold]
-         action: MyRest:backup_service_data
+    backup_service_data:
+      requires: [put_service_on_hold]
+      action: MyRest.backup_service_data
 
-     send_email:
-         requires: [backup_service_data, backup_user_data]
-         action: Email:send_email
-         parameters:
-            to: [mistral@example.com, boss@example.com]
-            subject: Backup complete
-            body: |
-               Congratulations, the backup is complete
+    send_email:
+      requires: [backup_service_data, backup_user_data]
+      action: std.email
+      parameters:
+        # Use password if smtpd requires TLS authentication (password: None).
+        params:
+          to: [mistral@example.com, boss@example.com]
+          subject: Backup complete
+          body: |
+            Congratulations, the backup is complete
 
-               -- Thanks, Mistral Team.
+            -- Thanks, Mistral Team.
+        settings:
+          smtp_server: localhost:10025
+          from: mistral@example.com
 
-     execute_backup:
-         requires: [backup_user_data, backup_service_data, send_email]
-         action: MyRest:execute_backup
-
+    execute_backup:
+      requires: [backup_user_data, backup_service_data, send_email]
+      action: MyRest.execute_backup
 
 triggers:
   execute_backup:
