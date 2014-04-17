@@ -7,6 +7,73 @@
 # - ssh_username ## username of your VM
 # - ssh_password ## password to your VM
 
+Namespaces:
+  Nova:
+  # Nova actions for creating VM, retrieving IP and VM deleting.
+    class: std.http
+    actions:
+      createVM:
+        base-parameters:
+          url: '{$.novaUrl}/{$.project_id}/servers'
+          method: POST
+          headers:
+            X-Auth-Token: $.auth_token
+            Content-Type: application/json
+          body:
+            server:
+              name: $.server_name
+              imageRef: $.image_id
+              flavorRef: $.flavor_id
+        output:
+          vm_id: $.content.server.id
+
+      getIP:
+        base-parameters:
+          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
+          method: GET
+          headers:
+            X-Auth-Token: $.auth_token
+        output:
+          vm_ip: "$.content.server.addresses.novanetwork.where($.'OS-EXT-IPS:type' = 'floating')[0].addr"
+
+      deleteVM:
+        base-parameters:
+          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
+          method: DELETE
+          headers:
+            X-Auth-Token: $.auth_token
+
+  Server:
+    actions:
+      # HTTP request to the server.
+      calcSumm:
+        class: std.http
+        base-parameters:
+          url: 'http://{$.vm_ip}:5000/summ'
+          method: POST
+          body:
+            arguments: $.arguments
+        output:
+          summ_result: $.content.result
+
+  Ssh:
+    class: std.ssh
+    base-parameters:
+      host: $.vm_ip
+      username: $.username
+      password: $.password
+    actions:
+      # Simple SSH command.
+      waitSSH:
+        base-parameters:
+          cmd: 'ls -l'
+
+      # SSH command to run the server.
+      runServer:
+        base-parameters:
+          cmd: 'nohup python ~/web_app.py > web_app.log &'
+
+
 Workflow:
   tasks:
     deleteVM:
@@ -80,7 +147,8 @@ Workflow:
         arguments:
           - 32
           - 45
-          - 27
+          - 23
+        vm_ip: $.vm_ip
       publish:
         result: summ_result
       on-finish: deleteVM
@@ -100,101 +168,3 @@ Workflow:
 #    tasks: runJob
 #    parameters:
 #      cron-pattern: "*/1 * * * *"
-
-Namespaces:
-  Nova:
-  # Nova actions for creating VM, retrieving IP and VM deleting.
-    actions:
-      createVM:
-        class: std.http
-        base-parameters:
-          url: '{$.novaUrl}/{$.project_id}/servers'
-          method: POST
-          headers:
-            X-Auth-Token: $.auth_token
-            Content-Type: application/json
-          body:
-            server:
-              name: $.server_name
-              imageRef: $.image_id
-              flavorRef: $.flavor_id
-        output:
-          vm_id: $.content.server.id
-        parameters:
-          - novaUrl
-          - project_id
-          - auth_token
-          - server_name
-          - image_id
-          - flavor_id
-
-      getIP:
-        class: std.http
-        base-parameters:
-          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
-          method: GET
-          headers:
-            X-Auth-Token: $.auth_token
-        output:
-          vm_ip: "$.content.server.addresses.novanetwork.where($.'OS-EXT-IPS:type' = 'floating')[0].addr"
-        parameters:
-          - vm_id
-          - auth_token
-          - novaUrl
-          - project_id
-
-      deleteVM:
-        class: std.http
-        base-parameters:
-          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
-          method: DELETE
-          headers:
-            X-Auth-Token: $.auth_token
-        parameters:
-          - auth_token
-          - vm_id
-          - novaUrl
-          - project_id
-
-  Server:
-    actions:
-      # HTTP request to the server.
-      calcSumm:
-        class: std.http
-        base-parameters:
-          url: 'http://{$.vm_ip}:5000/summ'
-          method: POST
-          body:
-            arguments: $.arguments
-        output:
-          summ_result: $.content.result
-        parameters:
-          - arguments
-
-  Ssh:
-    actions:
-      # Simple SSH command.
-      waitSSH:
-        class: std.ssh
-        base-parameters:
-          host: $.vm_ip
-          cmd: 'ls -l'
-          username: $.username
-          password: $.password
-        parameters:
-          - vm_ip
-          - username
-          - password
-
-      # SSH command to run the server.
-      runServer:
-        class: std.ssh
-        base-parameters:
-          host: $.vm_ip
-          cmd: 'nohup python ~/web_app.py > web_app.log &'
-          username: $.username
-          password: $.password
-        parameters:
-          - vm_ip
-          - username
-          - password
