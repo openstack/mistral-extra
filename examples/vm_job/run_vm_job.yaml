@@ -1,11 +1,15 @@
 # For get this work, please provide next properties to execution context:
-# - novaUrl  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
+# - nova_url  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
 # - server_name ## Name you want to give to new instance
 # - image_id  ## image id from Glance service
 # - flavor_id ## flavor id - type of instance hardware
-# - network_id ## network id you want to connect your new instance
 # - ssh_username ## username of your VM
 # - ssh_password ## password to your VM
+# - admin_email ## email address to send notifications to
+# - from_email ## email address to send notifications from
+# - smtp_server ## SMTP server to use for sending emails (e.g. smtp.gmail.com:587)
+# - smtp_password ## password to connect to SMTP server
+
 
 Namespaces:
   Nova:
@@ -14,7 +18,7 @@ Namespaces:
     actions:
       createVM:
         base-parameters:
-          url: '{$.novaUrl}/{$.project_id}/servers'
+          url: '{$.nova_url}/{$.project_id}/servers'
           method: POST
           headers:
             X-Auth-Token: $.auth_token
@@ -29,7 +33,7 @@ Namespaces:
 
       getIP:
         base-parameters:
-          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
+          url: '{$.nova_url}/{$.project_id}/servers/{$.vm_id}'
           method: GET
           headers:
             X-Auth-Token: $.auth_token
@@ -38,7 +42,7 @@ Namespaces:
 
       deleteVM:
         base-parameters:
-          url: '{$.novaUrl}/{$.project_id}/servers/{$.vm_id}'
+          url: '{$.nova_url}/{$.project_id}/servers/{$.vm_id}'
           method: DELETE
           headers:
             X-Auth-Token: $.auth_token
@@ -73,26 +77,16 @@ Namespaces:
         base-parameters:
           cmd: 'nohup python ~/web_app.py > web_app.log &'
 
-
 Workflow:
   tasks:
-    deleteVM:
-      action: Nova.deleteVM
-      parameters:
-        novaUrl: $.novaUrl
-        project_id: $.project_id
-        auth_token: $.auth_token
-        vm_id: $.vm_id
-
-# Creating a VM and waiting till it is up (an IP address has been assigned).
-
+    # Create a VM (request to Nova).
     createVM:
       action: Nova.createVM
       parameters:
         server_name: $.server_name
         image_id: $.image_id
         flavor_id: $.flavor_id
-        novaUrl: $.novaUrl
+        nova_url: $.nova_url
         project_id: $.project_id
         auth_token: $.auth_token
       publish:
@@ -100,6 +94,7 @@ Workflow:
       on-success: waitForIP
       on-error: sendCreateVMError
 
+    # Wait till the VM is assigned with IP address (request to Nova).
     waitForIP:
       action: Nova.getIP
       retry:
@@ -108,15 +103,14 @@ Workflow:
       publish:
         vm_ip: vm_ip
       parameters:
-        novaUrl: $.novaUrl
+        nova_url: $.nova_url
         project_id: $.project_id
         auth_token: $.auth_token
         vm_id: $.vm_id
       on-success: waitSSH
       on-error: deleteVM
 
-# Waiting till VM's OS is up sending SSH simple commands.
-
+    # Wait till operating system on the VM is up (SSH command).
     waitSSH:
       action: Ssh.waitSSH
       retry:
@@ -127,9 +121,9 @@ Workflow:
         password: $.ssh_password
         vm_ip: $.vm_ip
       on-success: runServer
+      on-error: deleteVM
 
-# When SSH is up, we are able to run the server on VM.
-
+    # When SSH is up, we are able to run the server on VM (SSH command).
     runServer:
       action: Ssh.runServer
       parameters:
@@ -139,10 +133,12 @@ Workflow:
       on-success: calcSumm
       on-error: deleteVM
 
-# Send HTTP request on server and calc the result.
-
+    # Send HTTP request on server and calc the result.
     calcSumm:
       action: Server.calcSumm
+      retry:
+        count: 10
+        delay: 1
       parameters:
         arguments:
           - 32
@@ -151,16 +147,50 @@ Workflow:
         vm_ip: $.vm_ip
       publish:
         result: summ_result
+      on-finish: sendResultEmail
+
+    # In case of createVM error send e-mail with error message.
+    sendResultEmail:
+      action: std.email
+      parameters:
+        params:
+          to: [$.admin_email]
+          subject: Workflow result
+          body: |
+            Workflow result of execution {$.__execution.id} is {$.result}
+
+            -- Thanks, Mistral Team.
+        settings:
+          smtp_server: $.smtp_server
+          from: $.from_email
+          password: $.smtp_password
       on-finish: deleteVM
 
-# In case of createVM error send e-mail with error message.
-
+    # In case of createVM error send e-mail with error message.
     sendCreateVMError:
-      action: std:email
+      action: std.email
       parameters:
-        address: admin@mycompany.com
-        subject: Workflow error
-        body: Failed to create a VM in execution {$.execution.id}
+        params:
+          to: [$.admin_email]
+          subject: Workflow error
+          body: |
+            Failed to create a VM in execution {$.__execution.id}
+
+            -- Thanks, Mistral Team.
+        settings:
+          smtp_server: $.smtp_server
+          from: $.from_email
+          password: $.smtp_password
+      on-finish: deleteVM
+
+    # Destroy the VM (request to Nova).
+    deleteVM:
+      action: Nova.deleteVM
+      parameters:
+        nova_url: $.nova_url
+        project_id: $.project_id
+        auth_token: $.auth_token
+        vm_id: $.vm_id
 
 #triggers:
 #  runJob:
