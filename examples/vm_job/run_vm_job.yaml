@@ -108,7 +108,7 @@ Workflow:
         auth_token: $.auth_token
         vm_id: $.vm_id
       on-success: waitSSH
-      on-error: deleteVM
+      on-error: sendCreateVMError
 
     # Wait till operating system on the VM is up (SSH command).
     waitSSH:
@@ -121,7 +121,7 @@ Workflow:
         password: $.ssh_password
         vm_ip: $.vm_ip
       on-success: runServer
-      on-error: deleteVM
+      on-error: sendCreateVMError
 
     # When SSH is up, we are able to run the server on VM (SSH command).
     runServer:
@@ -131,7 +131,7 @@ Workflow:
         username: $.ssh_username
         password: $.ssh_password
       on-success: calcSumm
-      on-error: deleteVM
+      on-error: sendCreateVMError
 
     # Send HTTP request on server and calc the result.
     calcSumm:
