@@ -1,4 +1,4 @@
-# For get this work, please provide next properties to execution context:
+# This example requires the following properties provided in execution context:
 # - nova_url  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
 # - server_name ## Name you want to give to new instance
 # - image_id  ## image id from Glance service
@@ -13,7 +13,7 @@
 
 Namespaces:
   Nova:
-  # Nova actions for creating VM, retrieving IP and VM deleting.
+    # Nova actions for creating VM, retrieving IP and VM deleting.
     class: std.http
     actions:
       createVM:
@@ -46,6 +46,8 @@ Namespaces:
           method: DELETE
           headers:
             X-Auth-Token: $.auth_token
+        output:
+          status: $.status
 
   Server:
     actions:
