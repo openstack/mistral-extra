@@ -21,11 +21,13 @@ How to run
    - Make sure that VM has SSH server in running state
    - Make sure that VM has password access via SSH
    - Install packages (example for Debian/Ubuntu based systems)
-```
-sudo apt-get install python-dev
-sudo apt-get install python-pip
-sudo pip install flask
-```
+
+     ```
+     sudo apt-get install python-dev
+     sudo apt-get install python-pip
+     sudo pip install flask
+     ```
+
    - Put *web_app.py* file in your home user directory
       > To check if it works, please type
       ```python ~/web_app.py```
@@ -34,16 +36,22 @@ sudo pip install flask
 
  - Make sure that you have installed python-mistralclient
    - if not, install it:
+
      ```
      git clone https://github.com/stackforge/python-mistralclient.git
      cd  python-mistralclient
      python setup.py install
      ```
+
  - Make sure that Mistral API and at least one Mistral-executor are up and running
  - Create workbook and upload the definition
+
    ```
-   mistral workbook-create myWorkbook description tag1,tag2 <path to run_vm_job.yaml>```
+   mistral workbook-create myWorkbook description tag1,tag2 <path to run_vm_job.yaml>
+   ```
+
  - Create context file (simple json, which contains needed by workflow properties)
+
    ```
    {
      "server_name": "name_of_your_VM",
@@ -58,6 +66,7 @@ sudo pip install flask
      "admin_email": "address_on_which_you_wish_to_send_messages",
    }
    ```
+
  - Start execution
    ```
    mistral execution-create myWorkbook createVM <path-to-the-context-file>
