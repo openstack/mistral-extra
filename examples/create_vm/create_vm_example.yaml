@@ -1,36 +1,42 @@
-# For get this work, please provide next properties to execution context:
-# - novaUrl  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
+# This example requires the following properties provided in execution context:
+# - nova_url  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
 # - server_name ## Name you want to give to new instance
 # - image_id  ## image id from Glance service
 # - flavor_id ## flavor id - type of instance hardware
 # - network_id ## network id you want to connect your new instance
 
-Services:
+Namespaces:
   Nova:
-    type: REST_API
-    parameters:
-      baseUrl: $.novaUrl
+    class: std.http
     actions:
       create-vm:
-        parameters:
-          url: /servers
+        base-parameters:
+          url: '{$.nova_url}/{$.project_id}/servers'
           method: POST
+          headers:
+            X-Auth-Token: $.auth_token
+            Content-Type: application/json
+          body:
+            server:
+              name: $.server_name
+              image_ref: $.image_id
+              flavor_ref: $.flavor_id
+              networks:
+                [uuid: $.network.id]
         output:
-          vm_id: $.server.id
-        headers:
-          X-Auth-Token: $.auth_token
-          Content-Type: application/json
+          vm_id: $.content.server.id
 
 Workflow:
   tasks:
     create-vm:
-      action: Nova:create-vm
+      action: Nova.create-vm
       parameters:
-        server:
-          name: $.server_name
-          image_ref: $.image_id
-          flavor_ref: $.flavor_id
-          networks:
-            [uuid: $.network_id]
+        server_name: $.server_name
+        image_id: $.image_id
+        flavor_id: $.flavor_id
+        nova_url: $.nova_url
+        project_id: $.project_id
+        network_id: $.network_id
+        auth_token: $.auth_token
       publish:
         vm_id: vm_id
