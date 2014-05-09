@@ -30,7 +30,7 @@ How to run
      "server_name": "name_of_your_VM",
      "nova_url": "url_to_nova_service",
      "image_id": "id_of_your_image",
-     "network_id": "your_network_id_for_associate_with_VM"
+     "network_id": "your_network_id_for_associate_with_VM",
      "flavor_id": "id_of_flavor",
    }
    ```

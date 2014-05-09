@@ -19,10 +19,10 @@ Namespaces:
           body:
             server:
               name: $.server_name
-              image_ref: $.image_id
-              flavor_ref: $.flavor_id
+              imageRef: $.image_id
+              flavorRef: $.flavor_id
               networks:
-                [uuid: $.network.id]
+                [uuid: $.network_id]
         output:
           vm_id: $.content.server.id
 
