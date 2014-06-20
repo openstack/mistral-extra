@@ -15,13 +15,15 @@ Namespaces:
   Nova:
     # Nova actions for creating VM, retrieving IP and VM deleting.
     class: std.http
+    base-parameters:
+      headers:
+        X-Auth-Token: $.openstack.auth_token
     actions:
       createVM:
         base-parameters:
-          url: '{$.nova_url}/{$.project_id}/servers'
+          url: '{$.nova_url}/{$.openstack.project_id}/servers'
           method: POST
           headers:
-            X-Auth-Token: $.auth_token
             Content-Type: application/json
           body:
             server:
@@ -33,19 +35,15 @@ Namespaces:
 
       getIP:
         base-parameters:
-          url: '{$.nova_url}/{$.project_id}/servers/{$.vm_id}'
+          url: '{$.nova_url}/{$.openstack.project_id}/servers/{$.vm_id}'
           method: GET
-          headers:
-            X-Auth-Token: $.auth_token
         output:
           vm_ip: "$.content.server.addresses.novanetwork.where($.'OS-EXT-IPS:type' = 'floating')[0].addr"
 
       deleteVM:
         base-parameters:
-          url: '{$.nova_url}/{$.project_id}/servers/{$.vm_id}'
+          url: '{$.nova_url}/{$.openstack.project_id}/servers/{$.vm_id}'
           method: DELETE
-          headers:
-            X-Auth-Token: $.auth_token
         output:
           status: $.status
 
@@ -89,10 +87,8 @@ Workflow:
         image_id: $.image_id
         flavor_id: $.flavor_id
         nova_url: $.nova_url
-        project_id: $.project_id
-        auth_token: $.auth_token
       publish:
-        vm_id: vm_id
+        vm_id: $.vm_id
       on-success: waitForIP
       on-error: sendCreateVMError
 
@@ -103,11 +99,9 @@ Workflow:
         count: 10
         delay: 10
       publish:
-        vm_ip: vm_ip
+        vm_ip: $.vm_ip
       parameters:
         nova_url: $.nova_url
-        project_id: $.project_id
-        auth_token: $.auth_token
         vm_id: $.vm_id
       on-success: waitSSH
       on-error: sendCreateVMError
@@ -148,7 +142,7 @@ Workflow:
           - 23
         vm_ip: $.vm_ip
       publish:
-        result: summ_result
+        result: $.summ_result
       on-finish: sendResultEmail
 
     # In case of createVM error send e-mail with error message.
@@ -190,8 +184,6 @@ Workflow:
       action: Nova.deleteVM
       parameters:
         nova_url: $.nova_url
-        project_id: $.project_id
-        auth_token: $.auth_token
         vm_id: $.vm_id
 
 #triggers:
