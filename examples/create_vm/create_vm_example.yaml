@@ -39,4 +39,4 @@ Workflow:
         network_id: $.network_id
         auth_token: $.auth_token
       publish:
-        vm_id: vm_id
+        vm_id: $.vm_id
