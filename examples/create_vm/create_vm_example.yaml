@@ -3,7 +3,6 @@
 # - server_name ## Name you want to give to new instance
 # - image_id  ## image id from Glance service
 # - flavor_id ## flavor id - type of instance hardware
-# - network_id ## network id you want to connect your new instance
 
 Namespaces:
   Nova:
@@ -21,8 +20,6 @@ Namespaces:
               name: $.server_name
               imageRef: $.image_id
               flavorRef: $.flavor_id
-              networks:
-                [uuid: $.network_id]
         output:
           vm_id: $.content.server.id
 
@@ -35,6 +32,5 @@ Workflow:
         image_id: $.image_id
         flavor_id: $.flavor_id
         nova_url: $.nova_url
-        network_id: $.network_id
       publish:
         vm_id: $.vm_id
