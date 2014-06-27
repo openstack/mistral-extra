@@ -1,6 +1,6 @@
 # This example requires the following properties provided in execution context:
 # - nova_url  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
-# - server_name ## Name you want to give to new instance
+# - server_name ## Name of the new instance
 # - image_id  ## image id from Glance service
 # - flavor_id ## flavor id - type of instance hardware
 

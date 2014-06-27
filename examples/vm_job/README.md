@@ -7,67 +7,60 @@ It is needed for spinning up a VM and use it to do some useful work given calcul
 What this example does
 --------------------
 
- 1. Creates a VM
- 2. Waits till it is up and running
- 3. Runs small web server on VM
- 4. Sends request to the server
- 5. If an error occurred, it sends a email to admin with error message
+1. Creates a VM
+2. Waits till it is up and running
+3. Runs small web server on VM
+4. Sends request to the server
+5. If an error occurred, it sends a email to admin with error message
 
 How to run
 ----------
 
- - Preparing
-   - Create your own image of virtual machine
-   - Make sure that VM has SSH server in running state
-   - Make sure that VM has password access via SSH
-   - Install packages (example for Debian/Ubuntu based systems)
+1. Preparing
 
-     ```
-     sudo apt-get install python-dev
-     sudo apt-get install python-pip
-     sudo pip install flask
-     ```
+  1. Create an image of virtual machine
+  2. Make sure that VM has SSH server in running state
+  3. Make sure that VM has password access via SSH
+  4. Install packages (example for Debian/Ubuntu based systems)
 
-   - Put *web_app.py* file in your home user directory
-      > To check if it works, please type
-      ```python ~/web_app.py```
-      > (this should run a small server on 5000 port)
-   - Save image
+          sudo apt-get install python-dev
+          sudo apt-get install python-pip
+          sudo pip install flask
 
- - Make sure that you have installed python-mistralclient
-   - if not, install it:
+  5. Put *web_app.py* file into user's home directory. To check if it works, type
 
-     ```
-     git clone https://github.com/stackforge/python-mistralclient.git
-     cd  python-mistralclient
-     python setup.py install
-     ```
+          python ~/web_app.py
 
- - Make sure that Mistral API and at least one Mistral-executor are up and running
- - Create workbook and upload the definition
+     This should run a small server on 5000 port.
 
-   ```
-   mistral workbook-create myWorkbook description tag1,tag2 <path to run_vm_job.yaml>
-   ```
+  6. Save image
 
- - Create context file (simple json, which contains needed by workflow properties)
+2. Make sure that python-mistralclient have been installed. If not, install it:
 
-   ```
-   {
-     "server_name": "name_of_your_VM",
-     "nova_url": "url_to_nova_service",
-     "image_id": "id_of_your_image",
-     "flavor_id": "id_of_flavor",
-     "ssh_username": "your_VM_username",
-     "ssh_password": "your_VM_password",
-     "smtp_server": "address_to_smtp_server",
-     "from_email": "your_email_address",
-     "smtp_password": "password_of_your_email",
-     "admin_email": "address_on_which_you_wish_to_send_messages",
-   }
-   ```
+       git clone https://github.com/stackforge/python-mistralclient.git
+       cd  python-mistralclient
+       python setup.py install
 
- - Start execution
-   ```
-   mistral execution-create myWorkbook createVM <path-to-the-context-file>
-   ```
+3. Make sure that Mistral API and at least one Mistral-executor are up and running
+4. Create workbook and upload the definition
+
+       mistral workbook-create myWorkbook description tag1,tag2 <path to run_vm_job.yaml>
+
+5. Create context file (simple json, which contains needed by workflow properties)
+
+       {
+         "server_name": "mistral-vm",
+         "nova_url": "http://172.16.80.100:8774/v2",
+         "image_id": "[copy from horizon or nova cli client]",
+         "flavor_id": "1",
+         "ssh_username": "[VM username]",
+         "ssh_password": "[VM password]",
+         "smtp_server": "[address to smtp server]",
+         "from_email": "[email address]",
+         "smtp_password": "[email password]",
+         "admin_email": "[address the message should be sent to]",
+       }
+
+6. Start execution
+
+       mistral execution-create myWorkbook createVM <path-to-the-context-file>

@@ -17,11 +17,20 @@
 import pkg_resources as pkg
 
 from mistralclient.api import client
+from mistralclient.openstack.common.cliutils import env
 
 from examples.webhooks import version
 
-MISTRAL_URL = "http://localhost:8989/v1"
-CLIENT = client.Client(mistral_url=MISTRAL_URL)
+from oslo.config import cfg
+
+
+CLIENT = client.Client(
+    mistral_url=env('OS_MISTRAL_URL', default=cfg.CONF.client.mistral_url),
+    auth_url=env('OS_AUTH_URL', default=cfg.CONF.client.auth_url),
+    username=env('OS_USERNAME', default=cfg.CONF.client.username),
+    api_key=env('OS_PASSWORD', default=cfg.CONF.client.password),
+    project_name=env('OS_TENANT_NAME', default=cfg.CONF.client.tenant_name)
+)
 
 
 WB_NAME = "myWorkbook"

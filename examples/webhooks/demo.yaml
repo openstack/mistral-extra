@@ -54,9 +54,9 @@ Workflow:
       requires: [backup_user_data, backup_service_data, send_email]
       action: MyRest.execute_backup
 
-triggers:
-  execute_backup:
-    type: periodic
-    tasks: execute_backup
-    parameters:
-      cron-pattern: "*/1 * * * *"
+# triggers:
+#   execute_backup:
+#     type: periodic
+#     tasks: execute_backup
+#     parameters:
+#       cron-pattern: "*/1 * * * *"

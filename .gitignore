@@ -40,3 +40,5 @@ nosetests.xml
 etc/mistral.conf
 tools/lintstack.head.py
 tools/pylint_exceptions
+
+/.vagrant/

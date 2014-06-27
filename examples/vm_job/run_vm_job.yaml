@@ -1,10 +1,10 @@
 # This example requires the following properties provided in execution context:
 # - nova_url  ## url to Nova service, e.g. http://0.0.0.0:8774/v3
-# - server_name ## Name you want to give to new instance
+# - server_name ## Name of the new instance
 # - image_id  ## image id from Glance service
 # - flavor_id ## flavor id - type of instance hardware
-# - ssh_username ## username of your VM
-# - ssh_password ## password to your VM
+# - ssh_username ## VM username
+# - ssh_password ## VM password
 # - admin_email ## email address to send notifications to
 # - from_email ## email address to send notifications from
 # - smtp_server ## SMTP server to use for sending emails (e.g. smtp.gmail.com:587)
