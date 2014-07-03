@@ -63,7 +63,7 @@ class ThreadingWSGIServer(ThreadingMixIn, simple_server.WSGIServer):
 
 
 def _run_smtpd():
-    #TODO: get address/port from demo.yaml smtp_server to match.
+    # TODO: get address/port from demo.yaml smtp_server to match.
     DebuggingServer(('localhost', 10025), None)
     asyncore.loop()
 
