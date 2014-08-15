@@ -1,0 +1,15 @@
+Workflow:
+  tasks:
+    project_list:
+      action: keystone.projects_list
+      publish:
+        project_id: $[0].id
+      on-success: project_get
+
+    project_get:
+      action: keystone.projects_get
+      parameters:
+        project: $.project_id
+      publish:
+        project: $.name
+        project_id: $.id
