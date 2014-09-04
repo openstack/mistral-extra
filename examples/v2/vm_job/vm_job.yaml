@@ -1,0 +1,152 @@
+# This example requires the following properties provided in execution context:
+# - server_name ## Name of the new instance
+# - image_id  ## image id from Glance service
+# - flavor_id ## flavor id - type of instance hardware
+# - ssh_username ## VM username
+# - ssh_password ## VM password
+# - admin_email ## email address to send notifications to
+# - from_email ## email address to send notifications from
+# - smtp_server ## SMTP server to use for sending emails (e.g. smtp.gmail.com:587)
+# - smtp_password ## password to connect to SMTP server
+
+Actions:
+  calc_summ:
+    description: HTTP request to the server.
+    base: std.http
+    base-parameters:
+      url: 'http://{$.vm_ip}:5000/summ'
+      method: POST
+      body:
+        arguments: $.arguments
+    output:
+      summ_result: $.content.result
+
+  wait_ssh:
+    description: Simple SSH command.
+    base: std.ssh
+    base-parameters:
+      host: $.vm_ip
+      username: $.username
+      password: $.password
+      cmd: 'ls -l'
+
+  run_calculator_server:
+    description: SSH command to run the server.
+    base: std.ssh
+    base-parameters:
+      host: $.vm_ip
+      username: $.username
+      password: $.password
+      cmd: 'nohup python ~/web_app.py > web_app.log &'
+
+Workflows:
+  run_vm_job:
+    type: direct
+    description: |
+      This workflow spins up a vm,
+      deploys calculator web app on it
+      and runs the calculation by sending
+      a request to calculator app.
+
+    tasks:
+      create_vm:
+        description: Initial request to create a VM.
+        action: nova.servers_create name="{$.server_name}" image="{$.image_ref}" flavor="{$.flavor_ref}"
+        publish:
+          vm_id: $.id
+        on-success:
+          - waitForIP
+        on-error:
+          - sendCreateVMError
+
+      wait_for_ip:
+        description: Wait till the VM is assigned with IP address.
+        action: nova.servers_get server="{$.vm_id}"
+        policies:
+          retry:
+            count: 10
+            delay: 10
+        publish:
+          vm_ip: $.content.server.addresses.novanetwork.where($.'OS-EXT-IPS:type' = 'floating')[0].addr
+        on-success:
+          - waitSSH
+        on-error:
+          - send_create_vm_error
+
+      wait_ssh:
+        description: Wait till operating system on the VM is up (SSH command).
+        action: wait_ssh username="{$.ssh_username}" password="{$.ssh_password}" vm_ip="{$.vm_ip}"
+        policies:
+          retry:
+            count: 10
+            delay: 10
+        on-success:
+          - run_server
+        on-error:
+          - send_create_vm_error
+
+      run_server:
+        description: When SSH is up, we are able to run the server on VM (SSH command).
+        action: run_calculator_server vm_ip="{$.vm_ip}" username="{$.ssh_username}" password="{$.ssh_password}"
+        on-success:
+          - calc_summ
+        on-error:
+          - send_create_vm_error
+
+      calc_summ:
+        description: Send HTTP request on server and calc the result.
+        action: calc_summ
+        parameters:
+          arguments:
+            - 32
+            - 45
+            - 23
+          vm_ip: $.vm_ip
+        policies:
+          retry:
+            count: 10
+            delay: 1
+        publish:
+          result: $.summ_result
+        on-complete:
+          - send_result_email
+
+      send_result_email:
+        description: In case of createVM error send e-mail with error message.
+        action: std.email
+        parameters:
+          params:
+            to: [$.admin_email]
+            subject: Workflow result
+            body: |
+              Workflow result of execution {$.__execution.id} is {$.result}
+
+              -- Thanks, Mistral Team.
+          settings:
+            smtp_server: $.smtp_server
+            from: $.from_email
+            password: $.smtp_password
+        on-complete:
+          - delete_vm
+
+      send_create_vm_error:
+        description: In case of createVM error send e-mail with error message.
+        action: std.email
+        parameters:
+          params:
+            to: [$.admin_email]
+            subject: Workflow error
+            body: |
+              Failed to create a VM in execution {$.__execution.id}
+
+              -- Thanks, Mistral Team.
+          settings:
+            smtp_server: $.smtp_server
+            from: $.from_email
+            password: $.smtp_password
+        on-complete: 
+          - delete_vm
+
+      delete_vm:
+        description: Destroy VM.
+        action: nova.servers_delete server="{$.vm_id}"
