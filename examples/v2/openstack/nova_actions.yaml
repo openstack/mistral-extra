@@ -1,0 +1,34 @@
+---
+Version: '2.0'
+
+Workflows:
+  create_vm:
+    type: direct
+    parameters:
+      - vm_name
+      - image_ref
+      - flavor_ref
+    output:
+      vm_id: $.vm_id
+
+    tasks:
+      create_server:
+        action: nova.servers_create name="{$.vm_name}" image="{$.image_ref}" flavor="{$.flavor_ref}"
+        publish:
+          vm_id: $.id
+        on-success:
+          - check_server_exists
+
+      check_server_exists:
+        action: nova.servers_get server="{$.vm_id}"
+        publish:
+          server_exists: True
+        on-success:
+          - wait_instance
+
+      wait_instance:
+        action: nova.servers_find id="{$.vm_id}" status='ACTIVE'
+        policies:
+          retry:
+            delay: 5
+            count: 15
