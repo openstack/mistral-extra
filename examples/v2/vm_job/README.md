@@ -46,14 +46,14 @@ How to run
 3. Make sure that Mistral API and at least one Mistral-executor are up and running
 4. Create workbook and upload the definition
 
-       mistral workbook-create myWorkbook tag1,tag2 <path to run_vm_job.yaml>
+       mistral workbook-create myWorkbook tag1,tag2 <path to vm_job.yaml>
 
 5. Create workflow input file (simple json)
 
        {
          "server_name": "mistral-vm",
-         "image_id": "[copy from horizon or nova cli client]",
-         "flavor_id": "1",
+         "image_ref": "[copy from horizon or nova cli client]",
+         "flavor_ref": "1",
          "ssh_username": "[VM username]",
          "ssh_password": "[VM password]",
          "smtp_server": "[address to smtp server]",
