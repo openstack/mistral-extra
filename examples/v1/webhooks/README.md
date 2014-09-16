@@ -20,4 +20,4 @@ under group "pecan" to False like the following:
 ### Running the example
 From the root folder ("mistral-extra" by default) run the following shell command:
 
-    tox -evenv -- python examples/webhooks/cmd/run.py
+    tox -evenv -- python examples/v1/webhooks/cmd/run.py

@@ -18,8 +18,8 @@ import pecan
 
 
 app = {
-    'root': 'examples.webhooks.api.controllers.root.RootController',
-    'modules': ['examples.webhooks.api'],
+    'root': 'examples.v1.webhooks.api.controllers.root.RootController',
+    'modules': ['examples.v1.webhooks.api'],
     'debug': True,
 }
 

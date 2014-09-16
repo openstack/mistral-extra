@@ -16,5 +16,5 @@
 
 from pbr import version
 
-version_info = version.VersionInfo('examples.webhooks')
+version_info = version.VersionInfo('examples.v1.webhooks')
 version_string = version_info.version_string

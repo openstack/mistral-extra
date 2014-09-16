@@ -16,7 +16,7 @@
 
 from oslo.config import cfg
 
-from examples.webhooks import version
+from examples.v1.webhooks import version
 
 
 api_opts = [

@@ -17,7 +17,7 @@
 from time import sleep
 import threading
 
-from examples.webhooks.api import client
+from examples.v1.webhooks.api import client
 
 
 CLIENT = client.CLIENT

@@ -19,13 +19,20 @@ import pkg_resources as pkg
 from mistralclient.api import client
 from mistralclient.openstack.common.cliutils import env
 
-from examples.webhooks import version
+from examples.v1.webhooks import version
 
 from oslo.config import cfg
 
 
-CLIENT = client.Client(
-    mistral_url=env('OS_MISTRAL_URL', default=cfg.CONF.client.mistral_url),
+MISTRAL_URL = env('OS_MISTRAL_URL', default=cfg.CONF.client.mistral_url)
+if MISTRAL_URL.find("v2") != -1:
+    raise RuntimeError("Can not run this example, please provide the correct"
+                       "Mistral v1 URL (default is %s)"
+                       % cfg.CONF.client.mistral_url)
+
+
+CLIENT = client.client(
+    mistral_url=MISTRAL_URL,
     auth_url=env('OS_AUTH_URL', default=cfg.CONF.client.auth_url),
     username=env('OS_USERNAME', default=cfg.CONF.client.username),
     api_key=env('OS_PASSWORD', default=cfg.CONF.client.password),

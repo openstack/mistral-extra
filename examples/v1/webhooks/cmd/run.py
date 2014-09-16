@@ -32,9 +32,9 @@ from smtpd import DebuggingServer
 
 from oslo.config import cfg
 
-from examples.webhooks import config
-from examples.webhooks.api import app
-from examples.webhooks.api import client
+from examples.v1.webhooks import config
+from examples.v1.webhooks.api import app
+from examples.v1.webhooks.api import client
 
 
 eventlet.monkey_patch(
