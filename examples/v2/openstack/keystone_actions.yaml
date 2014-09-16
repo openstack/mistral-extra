@@ -1,7 +1,7 @@
 ---
-Version: '2.0'
+version: '2.0'
 
-Workflows:
+workflows:
   get_first_keystone_project:
     type: direct
 
@@ -19,6 +19,6 @@ Workflows:
           - get_project_name
 
       get_project_name:
-        action: keystone.projects_get project="{$.project_id}"
+        action: keystone.projects_get project={$.project_id}
         publish:
           project_name: $.name

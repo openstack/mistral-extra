@@ -1,7 +1,7 @@
 ---
-Version: '2.0'
+version: '2.0'
 
-Workflows:
+workflows:
   get_first_glance_image:
     type: direct
 
@@ -19,6 +19,6 @@ Workflows:
           - get_image_name
 
       get_image_name:
-        action: glance.images_get image_id="{$.image_id}"
+        action: glance.images_get image_id={$.image_id}
         publish:
           image_name: $.name
