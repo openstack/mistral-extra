@@ -20,35 +20,40 @@ How to run
 
 1. Preparing
 
-  1. Create an image of virtual machine
-  2. Make sure that VM has SSH server in running state
-  3. Make sure that VM has password access via SSH
-  4. Install packages (example for Debian/Ubuntu based systems)
+  # Create an image of virtual machine
+  # Make sure that VM has SSH server in running state
+  # Make sure that VM has password access via SSH
+  # Install packages (example for Debian/Ubuntu based systems)
 
           sudo apt-get install python-dev
           sudo apt-get install python-pip
           sudo pip install flask
 
-  5. Put *web_app.py* file into user's home directory. To check if it works, type
+  # Put *web_app.py* file into user's home directory. To check if it works, type
 
           python ~/web_app.py
 
      This should run a small server on 5000 port.
 
-  6. Save image
+  # Save image
 
 2. Make sure that python-mistralclient have been installed. If not, install it:
 
-       git clone https://github.com/stackforge/python-mistralclient.git
-       cd  python-mistralclient
-       python setup.py install
+    git clone https://github.com/stackforge/python-mistralclient.git
+    cd  python-mistralclient
+    python setup.py install
 
 3. Make sure that Mistral API and at least one Mistral-executor are up and running
-4. Create workbook and upload the definition
+4. Make sure that OpenStack actions are active and all actions are shown via:
 
-       mistral workbook-create myWorkbook tag1,tag2 <path to vm_job.yaml>
+    mistral action-list
 
-5. Create workflow input file (simple json)
+Otherwise need to run *tools/sync.py* from mistral folder.
+5. Create workbook and upload the definition
+
+    mistral workbook-create myWorkbook tag1,tag2 *path to vm_job.yaml*
+
+6. Create workflow input file (simple json)
 
        {
          "server_name": "mistral-vm",
@@ -62,6 +67,7 @@ How to run
          "admin_email": "[address the message should be sent to]",
        }
 
-6. Start execution
+7. Start execution
 
-       mistral execution-create myWorkbook.run_vm_job <path-to-input-file>
+    mistral execution-create myWorkbook.run_vm_job *path-to-input-file*
+
