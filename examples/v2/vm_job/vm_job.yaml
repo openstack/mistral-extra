@@ -1,13 +1,3 @@
-# This example requires the following properties provided in execution context:
-# - server_name ## Name of the new instance
-# - image_id  ## image id from Glance service
-# - flavor_id ## flavor id - type of instance hardware
-# - ssh_username ## VM username
-# - ssh_password ## VM password
-# - admin_email ## email address to send notifications to
-# - from_email ## email address to send notifications from
-# - smtp_server ## SMTP server to use for sending emails (e.g. smtp.gmail.com:587)
-# - smtp_password ## password to connect to SMTP server
 ---
 version: "2.0"
 
@@ -44,7 +34,18 @@ actions:
 workflows:
   run_vm_job:
     type: direct
-    
+
+    parameters:
+      - server_name # Name of the new instance
+      - image_id  # image id from Glance service
+      - flavor_id # flavor id - type of instance hardware
+      - ssh_username # VM username
+      - ssh_password # VM password
+      - admin_email # email address to send notifications to
+      - from_email # email address to send notifications from
+      - smtp_server # SMTP server to use for sending emails (e.g. smtp.gmail.com:587)
+      - smtp_password # password to connect to SMTP server
+
     description: |
       This workflow spins up a vm,
       deploys calculator web app on it
@@ -54,7 +55,7 @@ workflows:
     tasks:
       create_vm:
         description: Initial request to create a VM.
-        action: nova.servers_create name={$.server_name} image={$.image_ref} flavor={$.flavor_ref}
+        action: nova.servers_create name={$.server_name} image={$.image_id} flavor={$.flavor_id}
         publish:
           vm_id: $.id
         on-success:
