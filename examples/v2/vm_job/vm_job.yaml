@@ -44,7 +44,7 @@ actions:
 workflows:
   run_vm_job:
     type: direct
-    start-task: create_vm
+    
     description: |
       This workflow spins up a vm,
       deploys calculator web app on it
