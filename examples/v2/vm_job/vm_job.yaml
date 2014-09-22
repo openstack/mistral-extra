@@ -5,7 +5,7 @@ actions:
   calc_summ:
     description: HTTP request to the server.
     base: std.http
-    base-parameters:
+    base-input:
       url: 'http://{$.vm_ip}:5000/summ'
       method: POST
       body:
@@ -16,7 +16,7 @@ actions:
   wait_ssh:
     description: Simple SSH command.
     base: std.ssh
-    base-parameters:
+    base-input:
       host: $.host
       username: $.username
       password: $.password
@@ -25,7 +25,7 @@ actions:
   run_calculator_server:
     description: SSH command to run the server.
     base: std.ssh
-    base-parameters:
+    base-input:
       host: $.host
       username: $.username
       password: $.password
@@ -35,7 +35,7 @@ workflows:
   run_vm_job:
     type: direct
 
-    parameters:
+    input:
       - server_name # Name of the new instance
       - image_id  # image id from Glance service
       - flavor_id # flavor id - type of instance hardware
@@ -106,7 +106,7 @@ workflows:
       calc_summ:
         description: Send HTTP request on server and calc the result.
         action: calc_summ
-        parameters:
+        input:
           arguments:
             - 32
             - 45
@@ -124,7 +124,7 @@ workflows:
       send_result_email:
         description: In case of createVM error send e-mail with error message.
         action: std.email
-        parameters:
+        input:
           params:
             to: [$.admin_email]
             subject: Workflow result
@@ -142,7 +142,7 @@ workflows:
       send_create_vm_error:
         description: In case of createVM error send e-mail with error message.
         action: std.email
-        parameters:
+        input:
           params:
             to: [$.admin_email]
             subject: Workflow error
