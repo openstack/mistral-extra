@@ -1,6 +1,8 @@
 ---
 version: "2.0"
 
+name: vm_job
+
 actions:
   calc_summ:
     description: HTTP request to the server.

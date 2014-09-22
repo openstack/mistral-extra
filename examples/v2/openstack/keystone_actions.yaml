@@ -1,6 +1,8 @@
 ---
 version: '2.0'
 
+name: keystone_actions
+
 workflows:
   get_first_keystone_project:
     type: direct

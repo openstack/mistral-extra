@@ -1,6 +1,8 @@
 ---
 version: '2.0'
 
+name: glance_actions
+
 workflows:
   get_first_glance_image:
     type: direct

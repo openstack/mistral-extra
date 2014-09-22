@@ -1,6 +1,8 @@
 ---
 version: '2.0'
 
+name: nova_actions
+
 workflows:
   create_vm:
     type: direct
