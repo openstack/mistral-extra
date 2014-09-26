@@ -71,6 +71,18 @@ workflows:
         publish:
           vm_ip: $[0].ip
         on-success:
+          - wait_vm_active
+        on-error:
+          - send_create_vm_error
+
+      wait_vm_active:
+        description: Waits till VM is ACTIVE.
+        action: nova.servers_find id={$.vm_id} status="ACTIVE"
+        policies:
+          retry:
+            count: 5
+            delay: 10
+        on-success:
           - associate_ip
         on-error:
           - send_create_vm_error
