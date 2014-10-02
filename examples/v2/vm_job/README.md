@@ -20,22 +20,22 @@ How to run
 
 1. Preparing
 
-  # Create an image of virtual machine
-  # Make sure that VM has SSH server in running state
-  # Make sure that VM has password access via SSH
-  # Install packages (example for Debian/Ubuntu based systems)
+    * Create an image of virtual machine
+    * Make sure that VM has SSH server in running state
+    * Make sure that VM has password access via SSH
+    * Install packages (example for Debian/Ubuntu based systems)
 
           sudo apt-get install python-dev
           sudo apt-get install python-pip
           sudo pip install flask
 
-  # Put *web_app.py* file into user's home directory. To check if it works, type
+    * Put *web_app.py* file into user's home directory. To check if it works, type
 
           python ~/web_app.py
 
      This should run a small server on 5000 port.
 
-  # Save image
+    * Save image
 
 2. Make sure that python-mistralclient have been installed. If not, install it:
 
