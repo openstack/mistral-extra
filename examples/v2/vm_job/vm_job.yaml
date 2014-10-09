@@ -15,15 +15,6 @@ actions:
     output:
       summ_result: $.content.result
 
-  wait_ssh:
-    description: Simple SSH command.
-    base: std.ssh
-    base-input:
-      host: $.host
-      username: $.username
-      password: $.password
-      cmd: 'ls -l'
-
   run_calculator_server:
     description: SSH command to run the server.
     base: std.ssh
@@ -48,6 +39,10 @@ workflows:
       - smtp_server # SMTP server to use for sending emails (e.g. smtp.gmail.com:587)
       - smtp_password # password to connect to SMTP server
 
+    task-defaults:
+      on-error:
+       - send_create_vm_error
+
     description: |
       This workflow spins up a vm,
       deploys calculator web app on it
@@ -57,75 +52,28 @@ workflows:
     tasks:
       create_vm:
         description: Initial request to create a VM.
-        action: nova.servers_create name={$.server_name} image={$.image_id} flavor={$.flavor_id}
+        workflow: std.create_instance
+        input:
+          name: $.server_name
+          image_id: $.image_id
+          flavor_id: $.flavor_id
+          ssh_username: $.ssh_username
+          ssh_password: $.ssh_password
         publish:
           vm_id: $.id
-        on-success:
-          - search_for_ip
-        on-error:
-          - send_create_vm_error
-
-      search_for_ip:
-        description: Gets first free ip from Nova floating IPs.
-        action: nova.floating_ips_findall instance_id=null
-        publish:
-          vm_ip: $[0].ip
-        on-success:
-          - wait_vm_active
-        on-error:
-          - send_create_vm_error
-
-      wait_vm_active:
-        description: Waits till VM is ACTIVE.
-        action: nova.servers_find id={$.vm_id} status="ACTIVE"
-        policies:
-          retry:
-            count: 5
-            delay: 10
-        on-success:
-          - associate_ip
-        on-error:
-          - send_create_vm_error
-
-      associate_ip:
-        description: Associate server with one of floating IPs.
-        action: nova.servers_add_floating_ip server={$.vm_id} address={$.vm_ip}
-        policies:
-          wait-after: 5
-        on-success:
-          - wait_ssh
-        on-error:
-          - send_create_vm_error
-
-      wait_ssh:
-        description: Wait till operating system on the VM is up (SSH command).
-        action: wait_ssh username={$.ssh_username} password={$.ssh_password} host={$.vm_ip}
-        policies:
-          retry:
-            count: 10
-            delay: 10
+          vm_ip: $.ip
         on-success:
           - run_server
-        on-error:
-          - send_create_vm_error
 
       run_server:
-        description: When SSH is up, we are able to run the server on VM (SSH command).
+        description: When VM is up, we are able to run the server on VM (SSH command).
         action: run_calculator_server host={$.vm_ip} username={$.ssh_username} password={$.ssh_password}
         on-success:
           - calc_summ
-        on-error:
-          - send_create_vm_error
 
       calc_summ:
         description: Send HTTP request on server and calc the result.
-        action: calc_summ
-        input:
-          arguments:
-            - 32
-            - 45
-            - 23
-          vm_ip: $.vm_ip
+        action: calc_summ arguments=[32, 45, 23] vm_ip={$.vm_ip}
         policies:
           retry:
             count: 10
@@ -173,4 +121,4 @@ workflows:
 
       delete_vm:
         description: Destroy VM.
-        action: nova.servers_delete server={$.vm_id}
+        workflow: std.delete_instance instance_id={$.vm_id}
