@@ -1,0 +1,79 @@
+---
+version: '2.0'
+
+name: tenant_statistics
+description: Gathering and sending tenant statistics
+
+actions:
+  send_tenant_stat:
+    input:
+      - project_id
+      - vm_count
+      - active_vm_count
+      - net_count
+      - to_email
+      - from_email
+      - smtp_server
+      - smtp_password
+
+    base: std.email
+    base-input:
+      params:
+        to: [$.to_email]
+        subject: OpenStack tenant statistics
+        body: |
+            Statistics for tenant "{$.project_id}"
+
+            Number of virtual machines: {$.vm_count}
+            Number of active virtual machines: {$.active_vm_count}
+            Number of networks: {$.net_count}
+
+            -- Sincerely, Mistral Team.
+      settings:
+        from: $.from_email
+        smtp_server: $.smtp_server
+        password: $.smtp_password
+
+workflows:
+  tenant_statistics:
+    type: direct
+    description: |
+      This workflow gathers some tenant metrics and sends them to the
+      configured email.
+
+    input:
+      - to_email
+      - from_email
+      - smtp_server
+      - smtp_password
+
+    tasks:
+      get_vm_count:
+        action: nova.servers_list
+        publish:
+          vm_count: $.length()
+          active_vm_count: $[$.status = 'ACTIVE'].length()
+        on-complete:
+          - get_net_count
+
+      get_net_count:
+        action: neutron.list_networks
+        publish:
+          net_count: $.length()
+        on-complete:
+          - send_stat
+
+      send_stat:
+        action: send_tenant_stat
+        input:
+          # Report body data.
+          project_id: $.openstack.project_id
+          vm_count: $.vm_count
+          active_vm_count: $.active_vm_count
+          net_count: $.net_count
+
+          # Email settings.
+          to_email: $.to_email
+          from_email: $.from_email
+          smtp_server: $.smtp_server
+          smtp_password: $.smtp_password
