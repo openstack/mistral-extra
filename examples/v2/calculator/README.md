@@ -1,7 +1,7 @@
-VM job example (based on v2 API/DSL)
+Calculator example (based on v2 API/DSL)
 ========================================
 
-'VM job example' is created to demonstrate Mistral project features:
+'Calculator example' is created to demonstrate Mistral project features:
 It spins up a VM and uses it to do some useful work. Particularly, created vm
 is used to deploy a simple web application on it which works a as a calculator
 returning over HTTP results of sum operations.
@@ -51,14 +51,14 @@ How to run
 Otherwise need to run *tools/sync.py* from mistral folder.
 5. Create workbook and upload the definition
 
-    mistral workbook-create myWorkbook tag1,tag2 *path to vm_job.yaml*
+    mistral workbook-create *path to calculator.yaml*
 
 6. Create workflow input file (simple json)
 
        {
          "server_name": "mistral-vm",
-         "image_ref": "[copy from horizon or nova cli client]",
-         "flavor_ref": "1",
+         "image_id": "[copy from horizon or nova cli client]",
+         "flavor_id": "1",
          "ssh_username": "[VM username]",
          "ssh_password": "[VM password]",
          "smtp_server": "[address to smtp server]",
@@ -69,5 +69,5 @@ Otherwise need to run *tools/sync.py* from mistral folder.
 
 7. Start execution
 
-    mistral execution-create myWorkbook.run_vm_job *path-to-input-file*
+    mistral execution-create calculator.run_calculator *path-to-input-file*
 

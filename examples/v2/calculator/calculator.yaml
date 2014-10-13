@@ -1,7 +1,7 @@
 ---
 version: "2.0"
 
-name: vm_job
+name: calculator
 
 actions:
   calc_summ:
@@ -25,7 +25,7 @@ actions:
       cmd: 'nohup python ~/web_app.py > web_app.log &'
 
 workflows:
-  run_vm_job:
+  run_calculator:
     type: direct
 
     input:
