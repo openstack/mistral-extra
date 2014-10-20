@@ -1,0 +1,91 @@
+---
+version: "2.0"
+
+name: vyatta
+
+actions:
+  vyatta_auth:
+    base: std.http
+    base-input:
+      url: "http://{$.host}/rest/conf"
+      method: POST
+      auth: '{$.username}:{$.password}'
+    input:
+     - host
+     - username
+     - password
+    output:
+      conf_url: $.headers.location
+
+workflows:
+  register_on_vyatta_firewall:
+    type: direct
+
+    input:
+      - machine_ip
+      - machine_name
+      - port
+      - vyatta_host
+      - vyatta_username
+      - vyatta_password
+
+    tasks:
+      get_conf_id_url:
+        action: vyatta_auth host={$.vyatta_host} username={$.vyatta_username} password={$.vyatta_password}
+        publish:
+          conf_url: $.conf_url
+        on-success:
+          - create_accept_rule
+
+      create_accept_rule:
+        action: std.http
+        input:
+          auth: '{$.vyatta_username}:{$.vyatta_password}'
+          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/action/accept'
+          method: PUT
+        on-success:
+          - set_protocol
+
+      set_protocol:
+        action: std.http
+        input:
+          auth: '{$.vyatta_username}:{$.vyatta_password}'
+          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/protocol/tcp'
+          method: PUT
+        on-success:
+          - set_address
+
+      set_address:
+        action: std.http
+        input:
+          auth: '{$.vyatta_username}:{$.vyatta_password}'
+          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/destination/address/{$.machine_ip}%2F24'
+          method: PUT
+        on-success:
+          - set_port
+
+      set_port:
+        action: std.http
+        input:
+          auth: '{$.vyatta_username}:{$.vyatta_password}'
+          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/destination/port/{$.port}'
+          method: PUT
+        on-success:
+          - commit_session
+
+      commit_session:
+        action: std.http
+        input:
+          auth: '{$.vyatta_username}:{$.vyatta_password}'
+          url: 'http://{$.vyatta_host}/{$.conf_url}/commit'
+          method: POST
+        on-success:
+          - save_session
+
+      save_session:
+        action: std.http
+        input:
+          auth: '{$.vyatta_username}:{$.vyatta_password}'
+          url: 'http://{$.vyatta_host}/{$.conf_url}/save'
+          method: POST
+
