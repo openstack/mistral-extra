@@ -1,0 +1,60 @@
+---
+version: 2.0
+
+name: register_in_multiple_services
+
+workflows:
+  create_and_register:
+    description: This workflow requires vyatta and zabbix workbooks.
+
+    type: direct
+
+    input:
+      - server_name # Name of the new instance
+      - image_id  # image id from Glance service
+      - flavor_id # flavor id - type of instance hardware
+      - ssh_username # VM username
+      - ssh_password # VM password
+
+      - zabbix_host
+      - zabbix_username
+      - zabbix_password
+
+      - vyatta_port
+      - vyatta_host
+      - vyatta_username
+      - vyatta_password
+
+    tasks:
+      create_vm:
+        workflow: std.create_instance
+        input:
+          name: $.server_name
+          image_id: $.image_id
+          flavor_id: $.flavor_id
+          ssh_username: $.ssh_username
+          ssh_password: $.ssh_password
+        publish:
+          vm_ip: $.ip
+        on-success:
+          - register_in_zabbix
+
+      register_in_zabbix:
+        workflow: zabbix.register_in_zabbix
+        input:
+          machine_ip: $.vm_ip
+          zabbix_host: $.zabbix_host
+          zabbix_username: $.zabbix_username
+          zabbix_password: $.zabbix_password
+        on-success:
+          - register_in_vyatta_firewall
+
+      register_in_vyatta_firewall:
+        workflow: vyatta.register_in_vyatta_firewall
+        input:
+          machine_ip: $.vm_ip
+          machine_name: $.server_name
+          port: $.vyatta_port
+          vyatta_host: $.vyatta_host
+          vyatta_username: $.vyatta_username
+          vyatta_password: $.vyatta_password

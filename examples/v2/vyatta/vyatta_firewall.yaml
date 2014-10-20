@@ -18,7 +18,7 @@ actions:
       conf_url: $.headers.location
 
 workflows:
-  register_on_vyatta_firewall:
+  register_in_vyatta_firewall:
     type: direct
 
     input:

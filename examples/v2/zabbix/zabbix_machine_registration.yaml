@@ -47,7 +47,7 @@ actions:
       auth: $.content.result
 
 workflows:
-  register_on_zabbix:
+  register_in_zabbix:
     type: direct
 
     input:
