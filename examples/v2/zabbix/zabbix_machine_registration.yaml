@@ -94,7 +94,9 @@ workflows:
         input:
           params:
             description: Simple check on host (ping)
-            key_: 'icmpping[<ip>,<count>,<interval>,<size>,<timeout>]'
+            type: 3
+            delay: 5
+            key_: 'icmpping'
             hostid: $.host_id
         publish:
           item_id: $.result.result.itemids[0]
