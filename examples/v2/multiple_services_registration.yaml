@@ -11,6 +11,7 @@ workflows:
 
     input:
       - server_name # Name of the new instance
+      - server_port
       - image_id  # image id from Glance service
       - flavor_id # flavor id - type of instance hardware
       - ssh_username # VM username
@@ -20,7 +21,6 @@ workflows:
       - zabbix_username
       - zabbix_password
 
-      - vyatta_port
       - vyatta_host
       - vyatta_username
       - vyatta_password
@@ -43,6 +43,7 @@ workflows:
         workflow: zabbix.register_in_zabbix
         input:
           machine_ip: $.vm_ip
+          machine_port: $.server_port
           zabbix_host: $.zabbix_host
           zabbix_username: $.zabbix_username
           zabbix_password: $.zabbix_password
@@ -54,7 +55,7 @@ workflows:
         input:
           machine_ip: $.vm_ip
           machine_name: $.server_name
-          port: $.vyatta_port
+          port: $.server_port
           vyatta_host: $.vyatta_host
           vyatta_username: $.vyatta_username
           vyatta_password: $.vyatta_password

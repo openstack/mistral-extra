@@ -52,6 +52,7 @@ workflows:
 
     input:
       - machine_ip
+      - machine_port
       - zabbix_host
       - zabbix_username
       - zabbix_password
@@ -68,7 +69,7 @@ workflows:
         action: zabbix method="hostgroup.create" auth={$.zabbix_auth} host={$.zabbix_host}
         input:
           params:
-            - name: Demo host group
+            - name: Mistral demo group
         publish:
           hostgroup_id: $.result.result.groupids[0]
         on-success:
@@ -78,9 +79,9 @@ workflows:
         action: zabbix method="host.create" auth={$.zabbix_auth} host={$.zabbix_host}
         input:
           params:
-            host: Demo host
+            host: Mistral host
             ip: $.machine_ip
-            port: 10500
+            port: $.machine_port
             useip: 1
             groups:
               - groupid: $.hostgroup_id
