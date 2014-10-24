@@ -34,7 +34,7 @@ workflows:
       - flavor_id # flavor id - type of instance hardware
       - ssh_username # VM username
       - ssh_password # VM password
-      - admin_email # email address to send notifications to
+      - to_email # email address to send notifications to
       - from_email # email address to send notifications from
       - smtp_server # SMTP server to use for sending emails (e.g. smtp.gmail.com:587)
       - smtp_password # password to connect to SMTP server
@@ -88,7 +88,7 @@ workflows:
         action: std.email
         input:
           params:
-            to: [$.admin_email]
+            to: [$.to_email]
             subject: Workflow result
             body: |
               Workflow result of execution {$.__execution.id} is {$.result}
@@ -106,7 +106,7 @@ workflows:
         action: std.email
         input:
           params:
-            to: [$.admin_email]
+            to: [$.to_email]
             subject: Workflow error
             body: |
               Failed to create a VM in execution {$.__execution.id}
@@ -122,3 +122,5 @@ workflows:
       delete_vm:
         description: Destroy VM.
         workflow: std.delete_instance instance_id={$.vm_id}
+        on-error:
+          - fail
