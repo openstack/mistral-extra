@@ -38,17 +38,18 @@ Workflow:
       requires: [backup_service_data, backup_user_data]
       action: std.email
       parameters:
-        # Use password if smtpd requires TLS authentication (password: None).
-        params:
-          to: [mistral@example.com, boss@example.com]
-          subject: Backup complete
-          body: |
-            Congratulations, the backup is complete
+        from_addr: mistral@example.com
+        to_addrs: [mistral@example.com, boss@example.com]
+        subject: Backup complete
+        body: |
+          Congratulations, the backup is complete
 
-            -- Thanks, Mistral Team.
-        settings:
-          smtp_server: localhost:10025
-          from: mistral@example.com
+          -- Thanks, Mistral Team.
+
+          -- Thanks, Mistral Team.
+        smtp_server: localhost:10025
+        # Use password if smtpd requires TLS authentication (password: None).
+        smtp_password: null
 
     execute_backup:
       requires: [backup_user_data, backup_service_data, send_email]

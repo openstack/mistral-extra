@@ -149,34 +149,30 @@ Workflow:
     sendResultEmail:
       action: std.email
       parameters:
-        params:
-          to: [$.admin_email]
-          subject: Workflow result
-          body: |
-            Workflow result of execution {$.__execution.id} is {$.result}
+        from_addr: $.from_email
+        to_addrs: [$.admin_email]
+        subject: Workflow result
+        body: |
+          Workflow result of execution {$.__execution.id} is {$.result}
 
-            -- Thanks, Mistral Team.
-        settings:
-          smtp_server: $.smtp_server
-          from: $.from_email
-          password: $.smtp_password
+          -- Thanks, Mistral Team.
+        smtp_server: $.smtp_server
+        smtp_password: $.smtp_password
       on-finish: deleteVM
 
     # In case of createVM error send e-mail with error message.
     sendCreateVMError:
       action: std.email
       parameters:
-        params:
-          to: [$.admin_email]
-          subject: Workflow error
-          body: |
-            Failed to create a VM in execution {$.__execution.id}
+        from_addr: $.from_email
+        to_addrs: [$.admin_email]
+        subject: Workflow error
+        body: |
+          Failed to create a VM in execution {$.__execution.id}
 
-            -- Thanks, Mistral Team.
-        settings:
-          smtp_server: $.smtp_server
-          from: $.from_email
-          password: $.smtp_password
+          -- Thanks, Mistral Team.
+        smtp_server: $.smtp_server
+        smtp_password: $.smtp_password
       on-finish: deleteVM
 
     # Destroy the VM (request to Nova).

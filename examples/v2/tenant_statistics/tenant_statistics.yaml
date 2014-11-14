@@ -18,21 +18,19 @@ actions:
 
     base: std.email
     base-input:
-      params:
-        to: [$.to_email]
-        subject: OpenStack tenant statistics
-        body: |
-            Statistics for tenant "{$.project_id}"
+      from_addr: $.from_email
+      to_addrs: [$.to_email]
+      subject: OpenStack tenant statistics
+      body: |
+        Statistics for tenant "{$.project_id}"
 
-            Number of virtual machines: {$.vm_count}
-            Number of active virtual machines: {$.active_vm_count}
-            Number of networks: {$.net_count}
+        Number of virtual machines: {$.vm_count}
+        Number of active virtual machines: {$.active_vm_count}
+        Number of networks: {$.net_count}
 
-            -- Sincerely, Mistral Team.
-      settings:
-        from: $.from_email
-        smtp_server: $.smtp_server
-        password: $.smtp_password
+        -- Sincerely, Mistral Team.
+      smtp_server: $.smtp_server
+      smtp_password: $.smtp_password
 
 workflows:
   tenant_statistics:
