@@ -33,7 +33,7 @@ actions:
       smtp_password: $.smtp_password
 
 workflows:
-  tenant_statistics:
+  tenant_statistics_plain:
     type: direct
     description: |
       This workflow gathers some tenant metrics and sends them to the
@@ -62,6 +62,51 @@ workflows:
           - send_stat
 
       send_stat:
+        action: send_tenant_stat
+        input:
+          # Report body data.
+          project_id: $.openstack.project_id
+          vm_count: $.vm_count
+          active_vm_count: $.active_vm_count
+          net_count: $.net_count
+
+          # Email settings.
+          to_email: $.to_email
+          from_email: $.from_email
+          smtp_server: $.smtp_server
+          smtp_password: $.smtp_password
+
+  tenant_statistics_join:
+    type: direct
+    description: |
+      This workflow gathers some tenant metrics and sends them to the
+      configured email using "join" control to run two tasks in parallel
+      prior to sending a final report by email.
+
+    input:
+      - to_email
+      - from_email
+      - smtp_server
+      - smtp_password
+
+    tasks:
+      get_vm_count:
+        action: nova.servers_list
+        publish:
+          vm_count: $.length()
+          active_vm_count: $[$.status = 'ACTIVE'].length()
+        on-complete:
+          - send_stat
+
+      get_net_count:
+        action: neutron.list_networks
+        publish:
+          net_count: $.length()
+        on-complete:
+          - send_stat
+
+      send_stat:
+        join: all
         action: send_tenant_stat
         input:
           # Report body data.
