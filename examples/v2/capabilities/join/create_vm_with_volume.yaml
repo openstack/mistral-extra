@@ -1,0 +1,51 @@
+---
+version: 2.0
+
+create_vm_with_volume:
+  type: direct
+  description: |
+    Creates a vm and and cinder volume in parallel, waits till both tasks
+    get completed using "join" workflow control and attaches the volume to
+    the vm.
+
+  input:
+    - server_name  # Name of the new instance
+    - image_id     # Image id from Glance service
+    - flavor_id    # Flavor id - type of instance hardware
+    - ssh_username # VM username
+    - ssh_password # VM password
+    - volume_name  # Volume display name
+
+  tasks:
+    create_vm:
+      workflow: std.create_instance
+      input:
+        name: $.server_name
+        image_id: $.image_id
+        flavor_id: $.flavor_id
+        ssh_username: $.ssh_username
+        ssh_password: $.ssh_password
+      publish:
+        vm_id: $.id
+      on-complete:
+        - attach_volume
+
+    create_volume:
+      description: Creates a volume of 2GB size with a given name.
+      action: cinder.volumes_create size=2 display_name={$.volume_name}
+      publish:
+        volume_id: $.id
+      on-complete:
+        - attach_volume
+
+    attach_volume:
+      # Waits for all possible inbound transitions.
+      # Other values are for "join" are "one" or a cardinality number that
+      # defines a minimal number of inbound transitions that must trigger
+      # to activate "join".
+      join: all
+      action: nova.volumes_create_server_volume
+      input:
+        server_id: $.vm_id
+        volume_id: $.volume_id
+        device: null
