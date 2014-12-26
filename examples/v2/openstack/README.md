@@ -77,7 +77,7 @@ To run the example:
         {
             "vm_name": "my_test_virtual_machine",
             "image_ref": "5486c382-fce3-4bde-abb3-51273a98c006",
-            "flavor_id": "2"
+            "flavor_ref": "2"
         }
 
 1. Start workflow:
