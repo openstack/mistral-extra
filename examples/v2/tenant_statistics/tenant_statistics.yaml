@@ -49,15 +49,15 @@ workflows:
       get_vm_count:
         action: nova.servers_list
         publish:
-          vm_count: $.length()
-          active_vm_count: $[$.status = 'ACTIVE'].length()
+          vm_count: $.get_vm_count.length()
+          active_vm_count: $.get_vm_count[$.status = 'ACTIVE'].length()
         on-complete:
           - get_net_count
 
       get_net_count:
         action: neutron.list_networks
         publish:
-          net_count: $.length()
+          net_count: $.get_net_count.length()
         on-complete:
           - send_stat
 
@@ -93,15 +93,15 @@ workflows:
       get_vm_count:
         action: nova.servers_list
         publish:
-          vm_count: $.length()
-          active_vm_count: $[$.status = 'ACTIVE'].length()
+          vm_count: $.get_vm_count.length()
+          active_vm_count: $.get_vm_count[$.status = 'ACTIVE'].length()
         on-complete:
           - send_stat
 
       get_net_count:
         action: neutron.list_networks
         publish:
-          net_count: $.length()
+          net_count: $.get_net_count.length()
         on-complete:
           - send_stat
 

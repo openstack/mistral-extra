@@ -17,7 +17,7 @@ workflows:
       create_server:
         action: nova.servers_create name={$.vm_name} image={$.image_ref} flavor={$.flavor_ref}
         publish:
-          vm_id: $.id
+          vm_id: $.create_server.id
         on-success:
           - check_server_exists
 

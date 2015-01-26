@@ -16,11 +16,11 @@ workflows:
       get_image_id:
         action: glance.images_list
         publish:
-          image_id: $[0].id
+          image_id: $.get_image_id[0].id
         on-success:
           - get_image_name
 
       get_image_name:
         action: glance.images_get image_id={$.image_id}
         publish:
-          image_name: $.name
+          image_name: $.get_image_name.name

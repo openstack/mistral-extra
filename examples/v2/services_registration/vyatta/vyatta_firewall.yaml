@@ -33,7 +33,7 @@ workflows:
       get_conf_id_url:
         action: vyatta_auth host={$.vyatta_host} username={$.vyatta_username} password={$.vyatta_password}
         publish:
-          conf_url: $.conf_url
+          conf_url: $.get_conf_id_url.conf_url
         on-success:
           - create_accept_rule
 

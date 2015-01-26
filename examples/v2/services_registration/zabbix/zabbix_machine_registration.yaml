@@ -61,7 +61,7 @@ workflows:
       get_zabbix_auth:
         action: zabbix_auth host={$.zabbix_host} username={$.zabbix_username} password={$.zabbix_password}
         publish:
-          zabbix_auth: $.auth
+          zabbix_auth: $.get_zabbix_auth.auth
         on-success:
           - zabbix_host_group_create
 
@@ -71,7 +71,7 @@ workflows:
           params:
             - name: Mistral demo group
         publish:
-          hostgroup_id: $.result.result.groupids[0]
+          hostgroup_id: $.zabbix_host_group_create.result.result.groupids[0]
         on-success:
           - zabbix_host_create
 
@@ -86,7 +86,7 @@ workflows:
             groups:
               - groupid: $.hostgroup_id
         publish:
-          host_id: $.result.result.hostids[0]
+          host_id: $.zabbix_host_create.result.result.hostids[0]
         on-success:
           - zabbix_item_create
 
@@ -100,4 +100,4 @@ workflows:
             key_: 'icmpping'
             hostid: $.host_id
         publish:
-          item_id: $.result.result.itemids[0]
+          item_id: $.zabbix_item_create.result.result.itemids[0]
