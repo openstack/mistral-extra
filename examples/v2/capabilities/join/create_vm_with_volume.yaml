@@ -20,21 +20,21 @@ create_vm_with_volume:
     create_vm:
       workflow: std.create_instance
       input:
-        name: $.server_name
-        image_id: $.image_id
-        flavor_id: $.flavor_id
-        ssh_username: $.ssh_username
-        ssh_password: $.ssh_password
+        name: <% $.server_name %>
+        image_id: <% $.image_id %>
+        flavor_id: <% $.flavor_id %>
+        ssh_username: <% $.ssh_username %>
+        ssh_password: <% $.ssh_password %>
       publish:
-        vm_id: $.create_vm.id
+        vm_id: <% $.create_vm.id %>
       on-complete:
         - attach_volume
 
     create_volume:
       description: Creates a volume of 2GB size with a given name.
-      action: cinder.volumes_create size=2 display_name={$.volume_name}
+      action: cinder.volumes_create size=2 display_name=<% $.volume_name %>
       publish:
-        volume_id: $.create_volume.id
+        volume_id: <% $.create_volume.id %>
       on-complete:
         - attach_volume
 
@@ -46,6 +46,6 @@ create_vm_with_volume:
       join: all
       action: nova.volumes_create_server_volume
       input:
-        server_id: $.vm_id
-        volume_id: $.volume_id
+        server_id: <% $.vm_id %>
+        volume_id: <% $.volume_id %>
         device: null

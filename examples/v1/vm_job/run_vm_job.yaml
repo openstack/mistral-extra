@@ -17,35 +17,35 @@ Namespaces:
     class: std.http
     base-parameters:
       headers:
-        X-Auth-Token: $.openstack.auth_token
+        X-Auth-Token: <% $.openstack.auth_token %>
     actions:
       createVM:
         base-parameters:
-          url: '{$.nova_url}/{$.openstack.project_id}/servers'
+          url: <% $.nova_url %>/<% $.openstack.project_id %>/servers
           method: POST
           headers:
             Content-Type: application/json
           body:
             server:
-              name: $.server_name
-              imageRef: $.image_id
-              flavorRef: $.flavor_id
+              name: <% $.server_name %>
+              imageRef: <% $.image_id %>
+              flavorRef: <% $.flavor_id %>
         output:
-          vm_id: $.content.server.id
+          vm_id: <% $.content.server.id %>
 
       getIP:
         base-parameters:
-          url: '{$.nova_url}/{$.openstack.project_id}/servers/{$.vm_id}'
+          url: <% $.nova_url %>/<% $.openstack.project_id %>/servers/<% $.vm_id %>
           method: GET
         output:
-          vm_ip: "$.content.server.addresses.novanetwork.where($.'OS-EXT-IPS:type' = 'floating')[0].addr"
+          vm_ip: <% $.content.server.addresses.novanetwork.where($.'OS-EXT-IPS:type' = 'floating')[0].addr %>
 
       deleteVM:
         base-parameters:
-          url: '{$.nova_url}/{$.openstack.project_id}/servers/{$.vm_id}'
+          url: <% $.nova_url %>/<% $.openstack.project_id %>/servers/<% $.vm_id %>
           method: DELETE
         output:
-          status: $.status
+          status: <% $.status %>
 
   Server:
     actions:
@@ -53,19 +53,19 @@ Namespaces:
       calcSumm:
         class: std.http
         base-parameters:
-          url: 'http://{$.vm_ip}:5000/summ'
+          url: 'http://<% $.vm_ip %>:5000/summ'
           method: POST
           body:
-            arguments: $.arguments
+            arguments: <% $.arguments %>
         output:
-          summ_result: $.content.result
+          summ_result: <% $.content.result %>
 
   Ssh:
     class: std.ssh
     base-parameters:
-      host: $.vm_ip
-      username: $.username
-      password: $.password
+      host: <% $.vm_ip %>
+      username: <% $.username %>
+      password: <% $.password %>
     actions:
       # Simple SSH command.
       waitSSH:
@@ -83,12 +83,12 @@ Workflow:
     createVM:
       action: Nova.createVM
       parameters:
-        server_name: $.server_name
-        image_id: $.image_id
-        flavor_id: $.flavor_id
-        nova_url: $.nova_url
+        server_name: <% $.server_name %>
+        image_id: <% $.image_id %>
+        flavor_id: <% $.flavor_id %>
+        nova_url: <% $.nova_url %>
       publish:
-        vm_id: $.vm_id
+        vm_id: <% $.vm_id %>
       on-success: waitForIP
       on-error: sendCreateVMError
 
@@ -99,10 +99,10 @@ Workflow:
         count: 10
         delay: 10
       publish:
-        vm_ip: $.vm_ip
+        vm_ip: <% $.vm_ip %>
       parameters:
-        nova_url: $.nova_url
-        vm_id: $.vm_id
+        nova_url: <% $.nova_url %>
+        vm_id: <% $.vm_id %>
       on-success: waitSSH
       on-error: sendCreateVMError
 
@@ -113,9 +113,9 @@ Workflow:
         count: 10
         delay: 10
       parameters:
-        username: $.ssh_username
-        password: $.ssh_password
-        vm_ip: $.vm_ip
+        username: <% $.ssh_username %>
+        password: <% $.ssh_password %>
+        vm_ip: <% $.vm_ip %>
       on-success: runServer
       on-error: sendCreateVMError
 
@@ -123,9 +123,9 @@ Workflow:
     runServer:
       action: Ssh.runServer
       parameters:
-        vm_ip: $.vm_ip
-        username: $.ssh_username
-        password: $.ssh_password
+        vm_ip: <% $.vm_ip %>
+        username: <% $.ssh_username %>
+        password: <% $.ssh_password %>
       on-success: calcSumm
       on-error: sendCreateVMError
 
@@ -140,47 +140,47 @@ Workflow:
           - 32
           - 45
           - 23
-        vm_ip: $.vm_ip
+        vm_ip: <% $.vm_ip %>
       publish:
-        result: $.summ_result
+        result: <% $.summ_result %>
       on-finish: sendResultEmail
 
     # In case of createVM error send e-mail with error message.
     sendResultEmail:
       action: std.email
       parameters:
-        from_addr: $.from_email
-        to_addrs: [$.admin_email]
+        from_addr: <% $.from_email %>
+        to_addrs: [<% $.admin_email %>]
         subject: Workflow result
         body: |
-          Workflow result of execution {$.__execution.id} is {$.result}
+          Workflow result of execution <% $.__execution.id %> is <% $.result %>
 
           -- Thanks, Mistral Team.
-        smtp_server: $.smtp_server
-        smtp_password: $.smtp_password
+        smtp_server: <% $.smtp_server %>
+        smtp_password: <% $.smtp_password %>
       on-finish: deleteVM
 
     # In case of createVM error send e-mail with error message.
     sendCreateVMError:
       action: std.email
       parameters:
-        from_addr: $.from_email
-        to_addrs: [$.admin_email]
+        from_addr: <% $.from_email %>
+        to_addrs: [<% $.admin_email %>]
         subject: Workflow error
         body: |
-          Failed to create a VM in execution {$.__execution.id}
+          Failed to create a VM in execution <% $.__execution.id %>
 
           -- Thanks, Mistral Team.
-        smtp_server: $.smtp_server
-        smtp_password: $.smtp_password
+        smtp_server: <% $.smtp_server %>
+        smtp_password: <% $.smtp_password %>
       on-finish: deleteVM
 
     # Destroy the VM (request to Nova).
     deleteVM:
       action: Nova.deleteVM
       parameters:
-        nova_url: $.nova_url
-        vm_id: $.vm_id
+        nova_url: <% $.nova_url %>
+        vm_id: <% $.vm_id %>
 
 #triggers:
 #  runJob:

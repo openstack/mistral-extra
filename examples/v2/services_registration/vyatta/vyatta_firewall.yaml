@@ -7,15 +7,15 @@ actions:
   vyatta_auth:
     base: std.http
     base-input:
-      url: "http://{$.host}/rest/conf"
+      url: "http://<% $.host %>/rest/conf"
       method: POST
-      auth: '{$.username}:{$.password}'
+      auth: '<% $.username %>:<% $.password %>'
     input:
      - host
      - username
      - password
     output:
-      conf_url: $.headers.location
+      conf_url: <% $.headers.location %>
 
 workflows:
   register_in_vyatta_firewall:
@@ -31,17 +31,17 @@ workflows:
 
     tasks:
       get_conf_id_url:
-        action: vyatta_auth host={$.vyatta_host} username={$.vyatta_username} password={$.vyatta_password}
+        action: vyatta_auth host=<% $.vyatta_host %> username=<% $.vyatta_username %> password=<% $.vyatta_password %>
         publish:
-          conf_url: $.get_conf_id_url.conf_url
+          conf_url: <% $.get_conf_id_url.conf_url %>
         on-success:
           - create_accept_rule
 
       create_accept_rule:
         action: std.http
         input:
-          auth: '{$.vyatta_username}:{$.vyatta_password}'
-          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/action/accept'
+          auth: '<% $.vyatta_username %>:<% $.vyatta_password %>'
+          url: 'http://<% $.vyatta_host %>/<% $.conf_url %>/set/firewall/name/<% $.machine_name %>/rule/10/action/accept'
           method: PUT
         on-success:
           - set_protocol
@@ -49,8 +49,8 @@ workflows:
       set_protocol:
         action: std.http
         input:
-          auth: '{$.vyatta_username}:{$.vyatta_password}'
-          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/protocol/tcp'
+          auth: '<% $.vyatta_username %>:<% $.vyatta_password %>'
+          url: 'http://<% $.vyatta_host %>/<% $.conf_url %>/set/firewall/name/<% $.machine_name %>/rule/10/protocol/tcp'
           method: PUT
         on-success:
           - set_address
@@ -58,8 +58,8 @@ workflows:
       set_address:
         action: std.http
         input:
-          auth: '{$.vyatta_username}:{$.vyatta_password}'
-          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/destination/address/{$.machine_ip}%2F24'
+          auth: '<% $.vyatta_username %>:<% $.vyatta_password %>'
+          url: 'http://<% $.vyatta_host %>/<% $.conf_url %>/set/firewall/name/<% $.machine_name %>/rule/10/destination/address/<% $.machine_ip %>%2F24'
           method: PUT
         on-success:
           - set_port
@@ -67,8 +67,8 @@ workflows:
       set_port:
         action: std.http
         input:
-          auth: '{$.vyatta_username}:{$.vyatta_password}'
-          url: 'http://{$.vyatta_host}/{$.conf_url}/set/firewall/name/{$.machine_name}/rule/10/destination/port/{$.port}'
+          auth: '<% $.vyatta_username %>:<% $.vyatta_password %>'
+          url: 'http://<% $.vyatta_host %>/<% $.conf_url %>/set/firewall/name/<% $.machine_name %>/rule/10/destination/port/<% $.port %>'
           method: PUT
         on-success:
           - commit_session
@@ -76,8 +76,8 @@ workflows:
       commit_session:
         action: std.http
         input:
-          auth: '{$.vyatta_username}:{$.vyatta_password}'
-          url: 'http://{$.vyatta_host}/{$.conf_url}/commit'
+          auth: '<% $.vyatta_username %>:<% $.vyatta_password %>'
+          url: 'http://<% $.vyatta_host %>/<% $.conf_url %>/commit'
           method: POST
         on-success:
           - save_session
@@ -85,7 +85,7 @@ workflows:
       save_session:
         action: std.http
         input:
-          auth: '{$.vyatta_username}:{$.vyatta_password}'
-          url: 'http://{$.vyatta_host}/{$.conf_url}/save'
+          auth: '<% $.vyatta_username %>:<% $.vyatta_password %>'
+          url: 'http://<% $.vyatta_host %>/<% $.conf_url %>/save'
           method: POST
 

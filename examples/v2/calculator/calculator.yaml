@@ -8,20 +8,20 @@ actions:
     description: HTTP request to the server.
     base: std.http
     base-input:
-      url: 'http://{$.vm_ip}:5000/summ'
+      url: 'http://<% $.vm_ip %>:5000/summ'
       method: POST
       body:
-        arguments: $.arguments
+        arguments: <% $.arguments %>
     output:
-      summ_result: $.content.result
+      summ_result: <% $.content.result %>
 
   run_calculator_server:
     description: SSH command to run the server.
     base: std.ssh
     base-input:
-      host: $.host
-      username: $.username
-      password: $.password
+      host: <% $.host %>
+      username: <% $.username %>
+      password: <% $.password %>
       cmd: 'nohup python ~/web_app.py > web_app.log &'
 
 workflows:
@@ -54,32 +54,32 @@ workflows:
         description: Initial request to create a VM.
         workflow: std.create_instance
         input:
-          name: $.server_name
-          image_id: $.image_id
-          flavor_id: $.flavor_id
-          ssh_username: $.ssh_username
-          ssh_password: $.ssh_password
+          name: <% $.server_name %>
+          image_id: <% $.image_id %>
+          flavor_id: <% $.flavor_id %>
+          ssh_username: <% $.ssh_username %>
+          ssh_password: <% $.ssh_password %>
         publish:
-          vm_id: $.create_vm.id
-          vm_ip: $.create_vm.ip
+          vm_id: <% $.create_vm.id %>
+          vm_ip: <% $.create_vm.ip %>
         on-success:
           - run_server
 
       run_server:
         description: When VM is up, we are able to run the server on VM (SSH command).
-        action: run_calculator_server host={$.vm_ip} username={$.ssh_username} password={$.ssh_password}
+        action: run_calculator_server host=<% $.vm_ip %> username=<% $.ssh_username %> password=<% $.ssh_password %>
         on-success:
           - calc_summ
 
       calc_summ:
         description: Send HTTP request on server and calc the result.
-        action: calc_summ arguments=[32, 45, 23] vm_ip={$.vm_ip}
+        action: calc_summ arguments=[32, 45, 23] vm_ip=<% $.vm_ip %>
         policies:
           retry:
             count: 10
             delay: 1
         publish:
-          result: $.calc_summ.summ_result
+          result: <% $.calc_summ.summ_result %>
         on-complete:
           - send_result_email
 
@@ -87,15 +87,15 @@ workflows:
         description: In case of createVM error send e-mail with error message.
         action: std.email
         input:
-          from_addr: $.from_email
-          to_addrs: [$.to_email]
+          from_addr: <% $.from_email %>
+          to_addrs: [<% $.to_email %>]
           subject: Workflow result
           body: |
-            Workflow result of execution {$.__execution.id} is {$.result}
+            Workflow result of execution <% $.__execution.id %> is <% $.result %>
 
             -- Thanks, Mistral Team.
-          smtp_server: $.smtp_server
-          smtp_password: $.smtp_password
+          smtp_server: <% $.smtp_server %>
+          smtp_password: <% $.smtp_password %>
         on-complete:
           - delete_vm
 
@@ -103,20 +103,20 @@ workflows:
         description: In case of createVM error send e-mail with error message.
         action: std.email
         input:
-          from_addr: $.from_email
-          to_addrs: [$.to_email]
+          from_addr: <% $.from_email %>
+          to_addrs: [<% $.to_email %>]
           subject: Workflow error
           body: |
-            Failed to create a VM in execution {$.__execution.id}
+            Failed to create a VM in execution <% $.__execution.id %>
 
             -- Thanks, Mistral Team.
-          smtp_server: $.smtp_server
-          smtp_password: $.smtp_password
+          smtp_server: <% $.smtp_server %>
+          smtp_password: <% $.smtp_password %>
         on-complete:
           - delete_vm
 
       delete_vm:
         description: Destroy VM.
-        workflow: std.delete_instance instance_id={$.vm_id}
+        workflow: std.delete_instance instance_id=<% $.vm_id %>
         on-error:
           - fail

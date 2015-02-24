@@ -18,19 +18,19 @@ actions:
 
     base: std.email
     base-input:
-      from_addr: $.from_email
-      to_addrs: [$.to_email]
+      from_addr: <% $.from_email %>
+      to_addrs: [<% $.to_email %>]
       subject: OpenStack tenant statistics
       body: |
-        Statistics for tenant "{$.project_id}"
+        Statistics for tenant "<% $.project_id %>"
 
-        Number of virtual machines: {$.vm_count}
-        Number of active virtual machines: {$.active_vm_count}
-        Number of networks: {$.net_count}
+        Number of virtual machines: <% $.vm_count %>
+        Number of active virtual machines: <% $.active_vm_count %>
+        Number of networks: <% $.net_count %>
 
         -- Sincerely, Mistral Team.
-      smtp_server: $.smtp_server
-      smtp_password: $.smtp_password
+      smtp_server: <% $.smtp_server %>
+      smtp_password: <% $.smtp_password %>
 
 workflows:
   tenant_statistics_plain:
@@ -49,15 +49,15 @@ workflows:
       get_vm_count:
         action: nova.servers_list
         publish:
-          vm_count: $.get_vm_count.length()
-          active_vm_count: $.get_vm_count[$.status = 'ACTIVE'].length()
+          vm_count: <% $.get_vm_count.length() %>
+          active_vm_count: <% $.get_vm_count[$.status = 'ACTIVE'].length() %>
         on-complete:
           - get_net_count
 
       get_net_count:
         action: neutron.list_networks
         publish:
-          net_count: $.get_net_count.length()
+          net_count: <% $.get_net_count.length() %>
         on-complete:
           - send_stat
 
@@ -65,16 +65,16 @@ workflows:
         action: send_tenant_stat
         input:
           # Report body data.
-          project_id: $.openstack.project_id
-          vm_count: $.vm_count
-          active_vm_count: $.active_vm_count
-          net_count: $.net_count
+          project_id: <% $.openstack.project_id %>
+          vm_count: <% $.vm_count %>
+          active_vm_count: <% $.active_vm_count %>
+          net_count: <% $.net_count %>
 
           # Email settings.
-          to_email: $.to_email
-          from_email: $.from_email
-          smtp_server: $.smtp_server
-          smtp_password: $.smtp_password
+          to_email: <% $.to_email %>
+          from_email: <% $.from_email %>
+          smtp_server: <% $.smtp_server %>
+          smtp_password: <% $.smtp_password %>
 
   tenant_statistics_join:
     type: direct
@@ -93,15 +93,15 @@ workflows:
       get_vm_count:
         action: nova.servers_list
         publish:
-          vm_count: $.get_vm_count.length()
-          active_vm_count: $.get_vm_count[$.status = 'ACTIVE'].length()
+          vm_count: <% $.get_vm_count.length() %>
+          active_vm_count: <% $.get_vm_count[$.status = 'ACTIVE'].length() %>
         on-complete:
           - send_stat
 
       get_net_count:
         action: neutron.list_networks
         publish:
-          net_count: $.get_net_count.length()
+          net_count: <% $.get_net_count.length() %>
         on-complete:
           - send_stat
 
@@ -110,13 +110,13 @@ workflows:
         action: send_tenant_stat
         input:
           # Report body data.
-          project_id: $.openstack.project_id
-          vm_count: $.vm_count
-          active_vm_count: $.active_vm_count
-          net_count: $.net_count
+          project_id: <% $.openstack.project_id %>
+          vm_count: <% $.vm_count %>
+          active_vm_count: <% $.active_vm_count %>
+          net_count: <% $.net_count %>
 
           # Email settings.
-          to_email: $.to_email
-          from_email: $.from_email
-          smtp_server: $.smtp_server
-          smtp_password: $.smtp_password
+          to_email: <% $.to_email %>
+          from_email: <% $.from_email %>
+          smtp_server: <% $.smtp_server %>
+          smtp_password: <% $.smtp_password %>

@@ -10,27 +10,27 @@ Namespaces:
     actions:
       create-vm:
         base-parameters:
-          url: '{$.nova_url}/{$.openstack.project_id}/servers'
+          url: '<% $.nova_url %>/<% $.openstack.project_id %>/servers'
           method: POST
           headers:
-            X-Auth-Token: $.openstack.auth_token
+            X-Auth-Token: <% $.openstack.auth_token %>
             Content-Type: application/json
           body:
             server:
-              name: $.server_name
-              imageRef: $.image_id
-              flavorRef: $.flavor_id
+              name: <% $.server_name %>
+              imageRef: <% $.image_id %>
+              flavorRef: <% $.flavor_id %>
         output:
-          vm_id: $.content.server.id
+          vm_id: <% $.content.server.id %>
 
 Workflow:
   tasks:
     create-vm:
       action: Nova.create-vm
       parameters:
-        server_name: $.server_name
-        image_id: $.image_id
-        flavor_id: $.flavor_id
-        nova_url: $.nova_url
+        server_name: <% $.server_name %>
+        image_id: <% $.image_id %>
+        flavor_id: <% $.flavor_id %>
+        nova_url: <% $.nova_url %>
       publish:
-        vm_id: $.vm_id
+        vm_id: <% $.vm_id %>

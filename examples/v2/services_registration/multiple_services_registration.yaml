@@ -29,33 +29,33 @@ workflows:
       create_vm:
         workflow: std.create_instance
         input:
-          name: $.server_name
-          image_id: $.image_id
-          flavor_id: $.flavor_id
-          ssh_username: $.ssh_username
-          ssh_password: $.ssh_password
+          name: <% $.server_name %>
+          image_id: <% $.image_id %>
+          flavor_id: <% $.flavor_id %>
+          ssh_username: <% $.ssh_username %>
+          ssh_password: <% $.ssh_password %>
         publish:
-          vm_ip: $.create_vm.ip
+          vm_ip: <% $.create_vm.ip %>
         on-success:
           - register_in_zabbix
 
       register_in_zabbix:
         workflow: zabbix.register_in_zabbix
         input:
-          machine_ip: $.vm_ip
-          machine_port: $.server_port
-          zabbix_host: $.zabbix_host
-          zabbix_username: $.zabbix_username
-          zabbix_password: $.zabbix_password
+          machine_ip: <% $.vm_ip %>
+          machine_port: <% $.server_port %>
+          zabbix_host: <% $.zabbix_host %>
+          zabbix_username: <% $.zabbix_username %>
+          zabbix_password: <% $.zabbix_password %>
         on-success:
           - register_in_vyatta_firewall
 
       register_in_vyatta_firewall:
         workflow: vyatta.register_in_vyatta_firewall
         input:
-          machine_ip: $.vm_ip
-          machine_name: $.server_name
-          port: $.server_port
-          vyatta_host: $.vyatta_host
-          vyatta_username: $.vyatta_username
-          vyatta_password: $.vyatta_password
+          machine_ip: <% $.vm_ip %>
+          machine_name: <% $.server_name %>
+          port: <% $.server_port %>
+          vyatta_host: <% $.vyatta_host %>
+          vyatta_username: <% $.vyatta_username %>
+          vyatta_password: <% $.vyatta_password %>
