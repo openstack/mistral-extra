@@ -74,10 +74,9 @@ workflows:
       calc_summ:
         description: Send HTTP request on server and calc the result.
         action: calc_summ arguments=[32, 45, 23] vm_ip=<% $.vm_ip %>
-        policies:
-          retry:
-            count: 10
-            delay: 1
+        retry:
+          count: 10
+          delay: 1
         publish:
           result: <% $.calc_summ.summ_result %>
         on-complete:
