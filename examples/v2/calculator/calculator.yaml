@@ -14,6 +14,9 @@ actions:
         arguments: <% $.arguments %>
     output:
       summ_result: <% $.content.result %>
+    input:
+      - vm_ip
+      - arguments
 
   run_calculator_server:
     description: SSH command to run the server.
@@ -23,6 +26,10 @@ actions:
       username: <% $.username %>
       password: <% $.password %>
       cmd: 'nohup python ~/web_app.py > web_app.log &'
+    input:
+      - host
+      - username
+      - password
 
 workflows:
   run_calculator:
