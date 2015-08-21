@@ -50,7 +50,7 @@ workflows:
         action: nova.servers_list
         publish:
           vm_count: <% $.get_vm_count.len() %>
-          active_vm_count: <% $.get_vm_count[$.status = 'ACTIVE'].len() %>
+          active_vm_count: <% $.get_vm_count.where($.status = 'ACTIVE').len() %>
         on-complete:
           - get_net_count
 
@@ -94,7 +94,7 @@ workflows:
         action: nova.servers_list
         publish:
           vm_count: <% $.get_vm_count.len() %>
-          active_vm_count: <% $.get_vm_count[$.status = 'ACTIVE'].len() %>
+          active_vm_count: <% $.get_vm_count.where($.status = 'ACTIVE').len() %>
         on-complete:
           - send_stat
 

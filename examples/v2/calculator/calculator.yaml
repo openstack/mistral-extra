@@ -97,7 +97,7 @@ workflows:
           to_addrs: [<% $.to_email %>]
           subject: Workflow result
           body: |
-            Workflow result of execution <% $.__execution.id %> is <% $.result %>
+            Workflow result of execution <% execution().id %> is <% $.result %>
 
             -- Thanks, Mistral Team.
           smtp_server: <% $.smtp_server %>
@@ -113,7 +113,7 @@ workflows:
           to_addrs: [<% $.to_email %>]
           subject: Workflow error
           body: |
-            Failed to create a VM in execution <% $.__execution.id %>
+            Failed to create a VM in execution <% execution().id %>
 
             -- Thanks, Mistral Team.
           smtp_server: <% $.smtp_server %>
