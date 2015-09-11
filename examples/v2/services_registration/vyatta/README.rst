@@ -1,3 +1,4 @@
+=============================================
 Vyatta Firewall example (based on v2 API/DSL)
 =============================================
 
@@ -10,13 +11,11 @@ service, sets IP address, protocol and port to this rule and commit transaction.
 How to run
 ----------
 
-1. Load workbook from vyatta_firewall.yaml:
-
+1. Load workbook from ``vyatta_firewall.yaml``::
 
     mistral workbook-create vyatta_firewall.yaml
 
-2. Create input.json file containing workflow input:
-
+2. Create ``input.json`` file containing workflow input::
 
     {
       "machine_ip": [your machine IP],
@@ -27,15 +26,13 @@ How to run
       "vyatta_password": [Zabbix password],
     }
 
-3. Run the execution:
-
+3. Run the execution::
 
     mistral execution-create vyatta.register_in_vyatta_firewall input.json
 
-4. Using execution id from the previous step wait for completion (workflow SUCCESS state):
-
+4. Using execution id from the previous step wait for completion (workflow ``SUCCESS`` state)::
 
     mistral execution-get <execution_id>
 
 5. Log in your Vyatta and check Firewall service. You will see new accept rule with configured
-IP address, protocol and port.
+   IP address, protocol and port.
