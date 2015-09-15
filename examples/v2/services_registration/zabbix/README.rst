@@ -1,3 +1,4 @@
+=================================================
 Zabbix registration example (based on v2 API/DSL)
 =================================================
 
@@ -11,13 +12,11 @@ every 5 seconds.
 How to run
 ----------
 
-1. Load workbook from zabbix_machine_registration.yaml:
-
+1. Load workbook from ``zabbix_machine_registration.yaml``::
 
     mistral workbook-create zabbix_machine_registration.yaml
 
-2. Create input.json file containing workflow input:
-
+2. Create ``input.json`` file containing workflow input::
 
     {
       "machine_ip": [your machine IP],
@@ -27,13 +26,11 @@ How to run
       "zabbix_password": [Zabbix password],
     }
 
-3. Run the execution:
-
+3. Run the execution::
 
     mistral execution-create zabbix.register_in_zabbix input.json
 
-4. Using execution id from the previous step wait for completion (workflow SUCCESS state):
-
+4. Using execution id from the previous step wait for completion (workflow ``SUCCESS`` state)::
 
     mistral execution-get <execution_id>
 
