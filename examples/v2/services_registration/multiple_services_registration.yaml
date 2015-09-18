@@ -35,7 +35,7 @@ workflows:
           ssh_username: <% $.ssh_username %>
           ssh_password: <% $.ssh_password %>
         publish:
-          vm_ip: <% $.create_vm.ip %>
+          vm_ip: <% task(create_vm).result.ip %>
         on-success:
           - register_in_zabbix
 

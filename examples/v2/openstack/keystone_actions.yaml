@@ -16,11 +16,11 @@ workflows:
       get_project_id:
         action: keystone.projects_list
         publish:
-          project_id: <% $.get_project_id[0].id %>
+          project_id: <% task(get_project_id).result[0].id %>
         on-success:
           - get_project_name
 
       get_project_name:
         action: keystone.projects_get project=<% $.project_id %>
         publish:
-          project_name: <% $.get_project_name.name %>
+          project_name: <% task(get_project_name).result.name %>

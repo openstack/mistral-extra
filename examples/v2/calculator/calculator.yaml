@@ -67,8 +67,8 @@ workflows:
           ssh_username: <% $.ssh_username %>
           ssh_password: <% $.ssh_password %>
         publish:
-          vm_id: <% $.create_vm.id %>
-          vm_ip: <% $.create_vm.ip %>
+          vm_id: <% task(create_vm).result.id %>
+          vm_ip: <% task(create_vm).result.ip %>
         on-success:
           - run_server
 
@@ -85,7 +85,7 @@ workflows:
           count: 10
           delay: 1
         publish:
-          result: <% $.calc_summ.summ_result %>
+          result: <% task(calc_summ).result.summ_result %>
         on-complete:
           - send_result_email
 

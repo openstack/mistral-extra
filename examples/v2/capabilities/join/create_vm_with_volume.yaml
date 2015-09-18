@@ -26,7 +26,7 @@ create_vm_with_volume:
         ssh_username: <% $.ssh_username %>
         ssh_password: <% $.ssh_password %>
       publish:
-        vm_id: <% $.create_vm.id %>
+        vm_id: <% task(create_vm).result.id %>
       on-complete:
         - attach_volume
 
@@ -34,7 +34,7 @@ create_vm_with_volume:
       description: Creates a volume of 2GB size with a given name.
       action: cinder.volumes_create size=2 display_name=<% $.volume_name %>
       publish:
-        volume_id: <% $.create_volume.id %>
+        volume_id: <% task(create_volume).result.id %>
       on-complete:
         - attach_volume
 
