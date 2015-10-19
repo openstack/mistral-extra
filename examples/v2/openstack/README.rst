@@ -135,3 +135,57 @@ or::
 
         mistral execution-get <execution_id>
 
+
+Crawl specific data
+-------------------
+
+Workflow ``crawl_specific_data`` located in file ``crawl_specific_data.yaml`` demonstrates
+how to do some job on each VM in a tenant, particularly, how to get specific data from VMs and
+send this data via email. Workflow can take either an array of **vm_ids** or all VMs
+in a tenant. Note that this workflow requires gateway VM with assigned floating
+IP which should be able to access to guest network in a tenant.
+
+**NOTE**: The workflow uses *std.ssh_proxied* action which requires existing private key
+file at executor host in **<home-user-directory>/.ssh/<private_key_filename>**
+**NOTE**: This upgrade kernel command works only for Ubuntu.
+
+To run the example:
+
+1. Load workflow from ``crawl_specific_data.yaml``::
+
+        mistral workflow-create crawl_specific_data.yaml
+
+2. Create ``input.json`` file containing workflow input parameters as follows::
+
+        {
+            "private_key_filename": "my_key.pem",
+            "gateway_host": "172.16.111.16",
+        }
+
+or::
+
+        {
+            "private_key_filename": "my_key.pem",
+            "gateway_host": "172.16.111.16",
+            "vm_ids": ["5486c382-fce3-4bde-abb3-51273a98c006", "7485f786-bcd1-8def-fed7-25637a89e600"]
+        }
+
+or, if you want to see email report, provide also an email info::
+
+        {
+            "private_key_filename": "my_key.pem",
+            "gateway_host": "172.16.111.16",
+            "from_email": "my_email@example.com",
+            "to_email": "admin_email@example.com",
+            "smtp_server": "smtp.gmail.com:587",
+            "smtp_password": "secret"
+        }
+
+3. Start workflow::
+
+        mistral execution-create crawl_data_from_vms input.json
+
+4. Using execution id from the previous step wait for completion (workflow ``SUCCESS`` state)::
+
+        mistral execution-get <execution_id>
+
