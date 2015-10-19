@@ -1,0 +1,42 @@
+---
+version: '2.0'
+
+upgrade_kernel_on_vms:
+  input:
+    - private_key_filename
+    - gateway_host
+    - vm_ids: null
+    - username: ubuntu
+
+  tasks:
+    schedule_upgrade:
+      on-success:
+        - get_hosts: <% $.vm_ids != null %>
+        - get_vms: <% $.vm_ids = null %>
+
+    get_vms:
+      action: nova.servers_list
+      publish:
+        vm_ids: <% task(get_vms).result.id %>
+      keep-result: false
+      on-success:
+        - get_hosts
+
+    get_hosts:
+      with-items: id in <% $.vm_ids %>
+      action: nova.servers_get server=<% $.id %>
+      publish:
+        hosts: <% task(get_hosts).result.select({ip => $.addresses.get($.addresses.keys().first()).where($.get("OS-EXT-IPS:type") = fixed).first().addr}).ip %>
+      keep-result: false
+      on-success:
+        - upgrade_vm
+
+    upgrade_vm: # Works for ubuntu
+      with-items: host in <% $.hosts %>
+      action: std.ssh_proxied
+      input:
+        host: <% $.host %>
+        gateway_host: <% $.gateway_host %>
+        private_key_filename: <% $.private_key_filename %>
+        username: <% $.username %>
+        cmd: "sudo apt-get update && sudo apt-get install linux-image-generic-lts-$(lsb_release -sc) -y"
