@@ -1,5 +1,5 @@
 ================================================
-OpenStack actions examples (based on v3 API/DSL)
+OpenStack actions examples (based on v2 API/DSL)
 ================================================
 
 These examples demonstrate how to use OpenStack Mistral actions in Mistral
@@ -92,3 +92,46 @@ To run the example:
 5. See the result of the workflow (virtual machine identifier)::
 
         mistral execution-get-output <execution_id>
+
+Update kernel
+-------------
+
+Workflow ``update_kernel`` located in file ``update_kernel.yaml`` demonstrates
+how to do some job on each VM in a tenant, particularly, how to upgrade VM kernel.
+Workflow can take either an array of **vm_ids** or all VMs in a tenant. Note that
+this workflow requires gateway VM with assigned floating IP which should be able to
+access to guest network in a tenant.
+
+**NOTE**: The workflow uses *std.ssh_proxied* action which requires existing private key
+file at executor host in **<home-user-directory>/.ssh/<private_key_filename>**
+**NOTE**: This upgrade kernel command works only for Ubuntu.
+
+To run the example:
+
+1. Load workflow from ``update_kernel.yaml``::
+
+        mistral workflow-create update_kernel.yaml
+
+2. Create ``input.json`` file containing workflow input parameters as follows::
+
+        {
+            "private_key_filename": "my_key.pem",
+            "gateway_host": "172.16.111.16",
+        }
+
+or::
+
+        {
+            "private_key_filename": "my_key.pem",
+            "gateway_host": "172.16.111.16",
+            "vm_ids": ["5486c382-fce3-4bde-abb3-51273a98c006", "7485f786-bcd1-8def-fed7-25637a89e600"]
+        }
+
+3. Start workflow::
+
+        mistral execution-create upgrade_kernel_on_vms input.json
+
+4. Using execution id from the previous step wait for completion (workflow ``SUCCESS`` state)::
+
+        mistral execution-get <execution_id>
+
