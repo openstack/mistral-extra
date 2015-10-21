@@ -39,4 +39,4 @@ upgrade_kernel_on_vms:
         gateway_host: <% $.gateway_host %>
         private_key_filename: <% $.private_key_filename %>
         username: <% $.username %>
-        cmd: "sudo apt-get update && sudo apt-get install linux-image-generic-lts-$(lsb_release -sc) -y"
+        cmd: "sudo apt-get update && sudo apt-get install linux-image-generic-lts-$(lsb_release -sc) -y && sudo reboot"
