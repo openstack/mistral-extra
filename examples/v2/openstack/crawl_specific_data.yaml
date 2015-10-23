@@ -4,7 +4,7 @@ version: '2.0'
 crawl_data_from_vms:
   input:
     - gateway_host
-    - private_key_name: id_rsa
+    - private_key_filename: id_rsa
     - vm_ids: null
     - username: ubuntu
     - filename: /var/log/auth.log
@@ -44,7 +44,7 @@ crawl_data_from_vms:
       input:
         host: <% $.host %>
         username: <% $.username %>
-        private_key_name: <% $.private_key_name %>
+        private_key_filename: <% $.private_key_filename %>
         gateway_host: <% $.gateway_host %>
         cmd: "cat <% $.filename %>"
       on-success:
