@@ -3,7 +3,7 @@
 # process, which may cause wedges in the gate later.
 pep8==1.5.7 # MIT
 pyflakes==0.8.1 # MIT
-flake8<=2.4.1,>=2.2.4 # MIT
+flake8<2.6.0,>2.4.1 # MIT
 pylint==1.4.5 # GNU GPL v2
 sphinx!=1.2.0,!=1.3b1,<1.3,>=1.1.2 # BSD
 unittest2 # BSD
