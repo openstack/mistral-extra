@@ -9,5 +9,5 @@ pecan>=1.0.0
 WSME>=0.7
 argparse
 oslo.config>=2.3.0 # Apache-2.0
-python-keystoneclient!=1.8.0,>=1.6.0
+python-keystoneclient!=1.8.0,<3.0.0,>=1.6.0
 Flask<1.0,>=0.10
