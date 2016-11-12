@@ -1,0 +1,18 @@
+{
+    "vm_name":"new_vm",
+    "flavor_ref":"1",
+    "source_root_vol_id":"1969299a-4c45-4900-bfe0-5ac65c1f2211",
+    "root_vol_name":"new_sys_vol",
+    "root_vol_size":1,
+    "additional_volumes":
+     [{
+     "vol_size":1,
+     "source_vol_id":"94391f69-a2f7-4406-b602-86e0b421d519",
+     "vol_name":"new_user_vol_1"
+     },
+     {
+     "vol_size":1,
+     "source_vol_id":"262b37ab-86f1-4be5-ada2-645898400584",
+     "vol_name":"new_user_vol_2"
+     }]
+}

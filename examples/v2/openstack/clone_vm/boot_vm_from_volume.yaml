@@ -1,0 +1,33 @@
+---
+version: '2.0'
+
+boot_vm_from_volume:
+  description: Create a virtual machine from a bootable volume
+  type: direct
+
+  input:
+    - vm_name
+    - block_device_mapping_v2
+    - flavor_ref
+    - image
+  output:
+    vm_id: <% $.vm_id %>
+
+  tasks:
+    create_server:
+      action: nova.servers_create
+      input:
+        name: <% $.vm_name %>
+        block_device_mapping_v2: <% $.block_device_mapping_v2 %>
+        flavor: <% $.flavor_ref %>
+        image: <% $.image %>
+      publish:
+        vm_id: <% task(create_server).result.id %>
+      on-success:
+        - wait_for_instance
+
+    wait_for_instance:
+      action: nova.servers_find id=<% $.vm_id %> status='ACTIVE'
+      retry:
+        delay: 10
+        count: 5

@@ -1,0 +1,31 @@
+---
+version: '2.0'
+
+clone_volume:
+  description: Create a new volume by cloning an existing one
+  type: direct
+
+  input:
+    - source_volid  # ID of the source volume
+    - name   # name of the new volume
+    - size   # size of the new volume
+  output:
+    vol_id: <% $.vol_id %>
+
+  tasks:
+    create_volume:
+      action: cinder.volumes_create
+      input:
+        name: <% $.name %>
+        size: <% $.size %>
+        source_volid: <% $.source_volid %>
+      publish:
+        vol_id: <% task(create_volume).result.id %>
+      on-success:
+        - wait_for_volume
+
+    wait_for_volume:
+      action: cinder.volumes_find id=<% $.vol_id %> status='available'
+      retry:
+        delay: 5
+        count: 15

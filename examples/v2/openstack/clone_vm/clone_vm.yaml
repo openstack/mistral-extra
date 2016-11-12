@@ -1,0 +1,75 @@
+---
+version: 2.0
+
+clone_vm:
+  type: direct
+  description: Create a virtual machine by cloning an existing one.                                                                                                                   1.clone system volume                                                                                                                                                         2.set the system volume to bootable                                                                                                                                           3.create a new instance from the new bootable system volume                                                                                                                   4.clone user volumes                                                                                                                                                          5.attach user volumes to the new instance
+
+  input:
+    - vm_name       #name of the new instance
+    - flavor_ref    #flavor of the new instance
+    - source_root_vol_id    #root volume id of the source instance
+    - root_vol_name  #root volume name of the new instance
+    - root_vol_size  #root volume size of the new instance
+    - additional_volumes:
+        - vol_name #volume name of the new instance
+        - vol_size #volume size of the new instance
+        - source_vol_id   #source volume id of the source instance
+
+  tasks:
+    clone_root_volume:
+      description: Create a new volume from root volume of source vm.
+      workflow: clone_volume
+      input:
+        size: <% $.root_vol_size %>
+        source_volid: <% $.source_root_vol_id %>
+        name: <% $.root_vol_name %>
+      publish:
+        new_root_vol_id: <% task(clone_root_volume).result.vol_id %>
+      on-success:
+        - set_volume_bootable
+
+    set_volume_bootable:
+      action: cinder.volumes_set_bootable volume=<% $.new_root_vol_id %> flag=true
+      on-success:
+        - create_new_vm
+
+    create_new_vm:
+      description: Boot a new instance from new bootable volume
+      workflow: boot_vm_from_volume
+      input:
+        image: ""
+        vm_name: <% $.vm_name %>
+        flavor_ref: <% $.flavor_ref %>
+        block_device_mapping_v2:
+          - source_type: "volume"
+            destination_type: "volume"
+            delete_on_termination: "FALSE"
+            boot_index: "0"
+            uuid: <% $.new_root_vol_id %>
+      publish:
+        new_vm_id: <% task(create_new_vm).result.vm_id %>
+      on-success:
+        - clone_additional_volumes
+
+    clone_additional_volumes:
+      description: Create new volumes from existed ones one by one
+      with-items: volume in <% $.additional_volumes %>
+      workflow: clone_volume
+      input:
+        source_volid: <% ($.volume).source_vol_id %>
+        size: <% ($.volume).vol_size %>
+        name: <% ($.volume).vol_name %>
+      publish:
+        additional_vol_ids: <% task(clone_additional_volumes).result.vol_id %>
+      on-success:
+        - attach_volume
+
+    attach_volume:
+      description: Attach additional volumes to the instance
+      with-items: vol_id in <% $.additional_vol_ids %>
+      action: nova.volumes_create_server_volume
+      input:
+        server_id: <% $.new_vm_id %>
+        volume_id: <% $.vol_id %>
+        device: null
