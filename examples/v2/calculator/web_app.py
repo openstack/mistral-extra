@@ -27,14 +27,14 @@ def summ():
 
     try:
         args_list = flask.json.loads(args).get('arguments')
-    except:
+    except Exception:
         return (403, "Please, specify list of arguments in the request body"
                 " in form '{\"arguments\": [arg1, arg2, .., argN]}'")
 
     for a in args_list:
         try:
             summ += int(a)
-        except:
+        except Exception:
             return 403, "Sorry, need to use only integer arguments!"
 
     return flask.jsonify({'result': summ})
