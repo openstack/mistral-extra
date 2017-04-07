@@ -90,7 +90,7 @@ workflows:
           - send_result_email
 
       send_result_email:
-        description: In case of createVM error send e-mail with error message.
+        description: Email the result of the calculation.
         action: std.email
         input:
           from_addr: <% $.from_email %>
