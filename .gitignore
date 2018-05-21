@@ -28,6 +28,7 @@ pip-log.txt
 .tox
 nosetests.xml
 .testrepository
+.stestr/
 AUTHORS
 
 # Translations
