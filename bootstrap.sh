@@ -46,7 +46,7 @@ export OS_AUTH_URL=http://localhost:35357/v2.0
 keystone user-role-add --user=mistral --tenant=admin --role=admin
 keystone user-role-add --user=mistral --tenant=demo --role=admin
 
-# Devstack's Horison service, for some reason, defines OPENSTACK_KEYSTONE_URL to v2 API instead of
+# Devstack's Horizon service, for some reason, defines OPENSTACK_KEYSTONE_URL to v2 API instead of
 # v3. Mistral, at the same time, requires v3 to work.
 echo 'OPENSTACK_KEYSTONE_URL="http://localhost:5000/v3"' >> \
   /opt/stack/horizon/openstack_dashboard/local/local_settings.py
