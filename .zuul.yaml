@@ -2,3 +2,4 @@
     templates:
       - openstack-python3-ussuri-jobs
       - check-requirements
+      - openstack-lower-constraints-jobs
