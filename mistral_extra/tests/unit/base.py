@@ -22,3 +22,31 @@ LOG = logging.getLogger(__name__)
 class BaseTest(base.BaseTestCase):
     def setUp(self):
         super(BaseTest, self).setUp()
+
+    def _assert_single_item(self, items, **props):
+        return self._assert_multiple_items(items, 1, **props)[0]
+
+    def _assert_multiple_items(self, items, count, **props):
+        def _matches(item, **props):
+            for prop_name, prop_val in props.items():
+                v = item[prop_name] if isinstance(
+                    item, dict) else getattr(item, prop_name)
+
+                if v != prop_val:
+                    return False
+
+            return True
+
+        filtered_items = list(
+            [item for item in items if _matches(item, **props)]
+        )
+
+        found = len(filtered_items)
+
+        if found != count:
+            LOG.info("[failed test ctx] items=%s, expected_props=%s", str(
+                items), props)
+            self.fail("Wrong number of items found [props=%s, "
+                      "expected=%s, found=%s]" % (props, count, found))
+
+        return filtered_items
