@@ -1,0 +1,3 @@
+upgrade:
+  - |
+    Move all OpenStack actions to mistral-extra

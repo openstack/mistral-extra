@@ -1,0 +1,1 @@
+import mistral_extra.config # noqa
