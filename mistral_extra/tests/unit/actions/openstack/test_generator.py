@@ -13,9 +13,8 @@
 import contextlib
 import os
 
+import fixtures
 from oslo_config import cfg
-
-import mock
 
 from mistral_extra.actions import generator_factory
 from mistral_extra.actions.openstack.action_generator import base as \
@@ -78,22 +77,17 @@ class GeneratorTest(base.BaseTest):
         # when it is initialised and attempts to connect. This mocks out this
         # service only and returns a simple function that can be used by the
         # inspection utils.
-        self.baremetal_patch = mock.patch.object(
-            actions.BaremetalIntrospectionAction,
-            "get_fake_client_method",
-            return_value=lambda x: None)
+        self.useFixture(fixtures.MockPatchObject(
+            actions.BaremetalIntrospectionAction, "get_fake_client_method",
+            return_value=lambda x: None))
 
-        self.baremetal_patch.start()
-        self.addCleanup(self.baremetal_patch.stop)
-
-        # Do the same for the Designate client.
-        self.designate_patch = mock.patch.object(
-            actions.DesignateAction,
-            "get_fake_client_method",
-            return_value=lambda x: None)
-
-        self.designate_patch.start()
-        self.addCleanup(self.designate_patch.stop)
+        # Do the same for the Zun client.
+        # There is no rpm packaging for Zun client
+        # so importing the client will fail when building
+        # the rpm and running the unittest so lets mock it
+        self.useFixture(fixtures.MockPatchObject(
+            actions.ZunAction, "get_fake_client_method",
+            return_value=lambda x: None))
 
     def test_generator(self):
         for generator_cls in generator_factory.all_generators():

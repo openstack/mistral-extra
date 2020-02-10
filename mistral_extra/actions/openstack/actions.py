@@ -711,10 +711,9 @@ class DesignateAction(base.OpenStackAction):
 
     @classmethod
     def _get_fake_client(cls):
-        session = keystone_utils.get_admin_session()
         return cls._get_client_class()(
             endpoint_override="http://127.0.0.1:9001/",
-            session=session
+            session=ks_session.Session()
         )
 
 
