@@ -89,6 +89,11 @@ class GeneratorTest(base.BaseTest):
             actions.ZunAction, "get_fake_client_method",
             return_value=lambda x: None))
 
+        # Same for Qinling client
+        self.useFixture(fixtures.MockPatchObject(
+            actions.QinlingAction, "get_fake_client_method",
+            return_value=lambda x: None))
+
     def test_generator(self):
         for generator_cls in generator_factory.all_generators():
             action_classes = generator_cls.create_actions()
