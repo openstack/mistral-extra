@@ -187,7 +187,6 @@ class HeatAction(base.OpenStackAction):
         return heatclient.Client
 
     def _create_client(self, context):
-
         LOG.debug("Heat action security context: %s", context)
 
         heat_endpoint = self.get_service_endpoint()

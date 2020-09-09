@@ -33,14 +33,17 @@ def get_mapping():
         for key, value in map_part.items():
             if isinstance(value, dict):
                 delete_comment(value)
+
         if '_comment' in map_part:
             del map_part['_comment']
+
     package = version.version_info.package
 
     if os.path.isabs(CONF.openstack_actions_mapping_path):
         mapping_file_path = CONF.openstack_actions_mapping_path
     else:
         path = CONF.openstack_actions_mapping_path
+
         mapping_file_path = pkg.resource_filename(package, path)
 
     LOG.info(
@@ -99,11 +102,13 @@ class OpenStackActionGenerator(action_generator.ActionGenerator):
             return ", ".join(added)
 
         inputs = [i.strip() for i in origin_inputs.split(',')]
+
         kwarg_index = None
 
         for index, input in enumerate(inputs):
             if "=" in input:
                 kwarg_index = index
+
             if "**" in input:
                 kwarg_index = index - 1
 
@@ -144,14 +149,17 @@ class OpenStackActionGenerator(action_generator.ActionGenerator):
             except Exception:
                 LOG.exception(
                     "Failed to create action: %s.%s",
-                    cls.action_namespace, action_name
+                    cls.action_namespace,
+                    action_name
                 )
+
                 continue
 
             arg_list = i_u.get_arg_list_as_str(client_method)
 
             # Support specifying region for OpenStack actions.
             modules = CONF.openstack_actions.modules_support_region
+
             if cls.action_namespace in modules:
                 arg_list = cls.prepare_action_inputs(
                     arg_list,

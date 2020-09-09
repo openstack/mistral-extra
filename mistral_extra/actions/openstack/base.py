@@ -22,6 +22,9 @@ from mistral_extra.actions.openstack.utils import exceptions as exc
 from mistral_extra.actions.openstack.utils import keystone as \
     keystone_utils
 from mistral_lib import actions
+from mistral_lib.actions import base as ml_actions_base
+from mistral_lib import serialization
+
 
 LOG = log.getLogger(__name__)
 
@@ -39,6 +42,8 @@ class OpenStackAction(actions.Action):
     _client_class = None
 
     def __init__(self, **kwargs):
+        super(OpenStackAction, self).__init__()
+
         self._kwargs_for_run = kwargs
         self.action_region = self._kwargs_for_run.pop('action_region', None)
 
@@ -135,3 +140,24 @@ class OpenStackAction(actions.Action):
         return dict(
             zip(self._kwargs_for_run, ['test'] * len(self._kwargs_for_run))
         )
+
+    @classmethod
+    def get_serialization_key(cls):
+        return "%s.%s" % (OpenStackAction.__module__, OpenStackAction.__name__)
+
+
+class OpenStackActionSerializer(ml_actions_base.ActionSerializer):
+    def serialize_to_dict(self, entity):
+        res = super(OpenStackActionSerializer, self).serialize_to_dict(entity)
+
+        # Since all OpenStack actions are dynamically generated with the
+        # function type() we need to take the base class of the action
+        # class (i.e. NovaAction) and write it to the result dict.
+        base_cls = type(entity).__bases__[0]
+
+        res['cls'] = '%s.%s' % (base_cls.__module__, base_cls.__name__)
+
+        return res
+
+
+serialization.register_serializer(OpenStackAction, OpenStackActionSerializer())
