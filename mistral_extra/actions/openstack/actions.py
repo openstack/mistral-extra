@@ -70,7 +70,6 @@ neutronclient = _try_import('neutronclient.v2_0.client')
 nova = _try_import('novaclient')
 novaclient = _try_import('novaclient.client')
 nova_api_versions = _try_import('novaclient.api_versions')
-qinlingclient = _try_import('qinlingclient.v1.client')
 senlinclient = _try_import('senlinclient.v1.client')
 swift_client = _try_import('swiftclient.client')
 swiftservice = _try_import('swiftclient.service')
@@ -1011,28 +1010,6 @@ class ZunAction(base.OpenStackAction):
     def _get_fake_client(cls):
         return cls._get_client_class()(
             endpoint_override="http://127.0.0.1:9517/",
-            session=ks_session.Session()
-        )
-
-
-class QinlingAction(base.OpenStackAction):
-    _service_type = 'function-engine'
-
-    @classmethod
-    def _get_client_class(cls):
-        return qinlingclient.Client
-
-    def _create_client(self, context):
-        qinling_endpoint = self.get_service_endpoint()
-        session_and_auth = self.get_session_and_auth(context)
-
-        return self._get_client_class()(endpoint_override=qinling_endpoint.url,
-                                        session=session_and_auth['session'])
-
-    @classmethod
-    def _get_fake_client(cls):
-        return cls._get_client_class()(
-            endpoint_override="http://127.0.0.1:7070/",
             session=ks_session.Session()
         )
 

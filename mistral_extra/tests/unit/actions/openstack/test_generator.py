@@ -57,8 +57,7 @@ MODULE_MAPPING = {
     'gnocchi': ['gnocchi.metric_list', actions.GnocchiAction],
     'glare': ['glare.artifacts_list', actions.GlareAction],
     'vitrage': ['vitrage.alarm_get', actions.VitrageAction],
-    'zun': ['zun.containers_list', actions.ZunAction],
-    'qinling': ['qinling.runtimes_list', actions.QinlingAction]
+    'zun': ['zun.containers_list', actions.ZunAction]
 }
 
 EXTRA_MODULES = ['neutron', 'swift', 'zaqar', 'tacker', 'senlin']
@@ -87,11 +86,6 @@ class GeneratorTest(base.BaseTest):
         # the rpm and running the unittest so lets mock it
         self.useFixture(fixtures.MockPatchObject(
             actions.ZunAction, "get_fake_client_method",
-            return_value=lambda x: None))
-
-        # Same for Qinling client
-        self.useFixture(fixtures.MockPatchObject(
-            actions.QinlingAction, "get_fake_client_method",
             return_value=lambda x: None))
 
     def test_generator(self):

@@ -379,19 +379,6 @@ class OpenStackActionTest(base.BaseTestCase):
             container_id="1234-abcd"
         )
 
-    @mock.patch.object(actions.QinlingAction, '_get_client')
-    def test_qinling_action(self, mocked):
-        mock_ctx = mock.Mock()
-        method_name = "runtimes.get"
-        action_class = actions.QinlingAction
-        action_class.client_method_name = method_name
-        params = {'id': '1234-abcd'}
-        action = action_class(**params)
-        action.run(mock_ctx)
-
-        self.assertTrue(mocked().runtimes.get.called)
-        mocked().runtimes.get.assert_called_once_with(id="1234-abcd")
-
     @mock.patch.object(actions.ManilaAction, '_get_client')
     def test_manila_action(self, mocked):
         mock_ctx = mock.Mock()

@@ -36,5 +36,4 @@ python-ironicclient==2.7.0
 python-ironic-inspector-client==1.5.0
 python-vitrageclient==2.0.0
 python-zunclient==3.4.0
-python-qinlingclient==1.0.0
 yaql==1.1.3
