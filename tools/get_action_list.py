@@ -35,7 +35,7 @@ from aodhclient.v2 import client as aodhclient
 from barbicanclient import base as barbican_base
 from barbicanclient import client as barbicanclient
 from cinderclient.apiclient import base as cinder_base
-from cinderclient.v2 import client as cinderclient
+from cinderclient.v3 import client as cinderclient
 from designateclient import client as designateclient
 from glanceclient.v2 import client as glanceclient
 from glareclient.v1 import client as glareclient
