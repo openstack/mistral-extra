@@ -55,7 +55,6 @@ MODULE_MAPPING = {
     'senlin': ['senlin.get_profile', actions.SenlinAction],
     'aodh': ['aodh.alarm_list', actions.AodhAction],
     'gnocchi': ['gnocchi.metric_list', actions.GnocchiAction],
-    'glare': ['glare.artifacts_list', actions.GlareAction],
     'vitrage': ['vitrage.alarm_get', actions.VitrageAction],
     'zun': ['zun.containers_list', actions.ZunAction]
 }
