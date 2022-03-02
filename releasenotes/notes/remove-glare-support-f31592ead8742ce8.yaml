@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The ``Glare`` project is no longer maintained and is not compatible with
+    the global runtime requirement. Because of this, support for Glare
+    resources have been removed.
