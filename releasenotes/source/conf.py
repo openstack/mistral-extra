@@ -54,8 +54,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'mistral-extra Release Notes'
-copyright = u'2016, OpenStack Foundation'
+project = 'mistral-extra Release Notes'
+copyright = '2016, OpenStack Foundation'
 
 # Release notes are version independent
 
@@ -200,8 +200,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     ('index', 'MistralExtraReleaseNotes.tex',
-     u'Mistral Extra Release Notes Documentation', u'Mistral '
-     u'Extra Developers', 'manual'),
+     'Mistral Extra Release Notes Documentation', 'Mistral '
+     'Extra Developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -230,8 +230,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'mistralextrareleasenotes', u'Mistral Extra Release Notes '
-     u'Documentation', [u'Mistral Extra Developers'], 1)
+    ('index', 'mistralextrareleasenotes', 'Mistral Extra Release Notes '
+     'Documentation', ['Mistral Extra Developers'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -244,8 +244,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'MistralExtraReleaseNotes', u'Mistral Library Release Notes '
-     u'Documentation', u'Mistral Extra Developers',
+    ('index', 'MistralExtraReleaseNotes', 'Mistral Library Release Notes '
+     'Documentation', 'Mistral Extra Developers',
      'MistralExtraReleaseNotes', 'One line description of project.',
      'Miscellaneous'),
 ]
