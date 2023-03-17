@@ -24,6 +24,9 @@ from mistral_extra import config
 
 from mistral_extra.tests.unit import base
 
+import barbicanclient.v1.client as barbicanclient_test
+from unittest import mock
+
 ABSOLUTE_TEST_MAPPING_PATH = os.path.realpath(
     os.path.join(os.path.dirname(__file__),
                  "../../../resources/openstack/test_mapping.json")
@@ -87,6 +90,11 @@ class GeneratorTest(base.BaseTest):
             actions.ZunAction, "get_fake_client_method",
             return_value=lambda x: None))
 
+    @mock.patch.object(
+        barbicanclient_test.Client,
+        '_get_max_supported_version',
+        mock.Mock(return_value="1.1")
+    )
     def test_generator(self):
         for generator_cls in generator_factory.all_generators():
             action_classes = generator_cls.create_actions()
