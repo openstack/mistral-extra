@@ -95,14 +95,14 @@ class NovaAction(base.OpenStackAction):
         session_and_auth = self.get_session_and_auth(context)
 
         temp_client = self._get_client_class()(
-            nova.API_MAX_VERSION,
+            nova.API_MIN_VERSION,
             endpoint_override=nova_endpoint.url,
             session=session_and_auth['session']
         )
 
         discovered_version = nova_api_versions.discover_version(
             temp_client,
-            nova.API_MAX_VERSION
+            nova_api_versions.APIVersion("2.latest")
         )
 
         return self._get_client_class()(
