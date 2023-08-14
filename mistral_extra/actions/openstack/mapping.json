@@ -819,7 +819,7 @@
         "instances_configuration": "instances.configuration",
         "instances_create": "instances.create",
         "instances_delete": "instances.delete",
-        "instances_edit": "instances.edit",
+        "instances_update": "instances.update",
         "instances_eject_replica_source": "instances.eject_replica_source",
         "instances_find": "instances.find",
         "instances_findall": "instances.findall",
