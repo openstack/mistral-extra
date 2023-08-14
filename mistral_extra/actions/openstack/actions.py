@@ -56,7 +56,7 @@ designateclient = _try_import('designateclient.v2.client')
 glanceclient = _try_import('glanceclient')
 gnocchiclient = _try_import('gnocchiclient.v1.client')
 heatclient = _try_import('heatclient.client')
-ironic_inspector_client = _try_import('ironic_inspector_client.v1')
+ironic_inspector_client = _try_import('ironic_inspector_client')
 ironicclient = _try_import('ironicclient.v1.client')
 keystoneclient = _try_import('keystoneclient.v3.client')
 manila = _try_import('manilaclient')
@@ -366,11 +366,24 @@ class BaremetalIntrospectionAction(base.OpenStackAction):
 
     @classmethod
     def _get_client_class(cls):
-        return ironic_inspector_client.ClientV1
+        return ironic_inspector_client.v1.ClientV1
 
     @classmethod
     def _get_fake_client(cls):
-        return cls._get_client_class()(inspector_url='http://127.0.0.1')
+        # Can't get real service api_version from a fake client
+        # Replace server_api_versions method here
+        server_api_versions = \
+            ironic_inspector_client.common.http.BaseClient.server_api_versions
+
+        ironic_inspector_client.common.http.BaseClient.server_api_versions = \
+            lambda x: ((1, 0), (1, 0))
+
+        client = cls._get_client_class()(inspector_url='http://127.0.0.1')
+
+        ironic_inspector_client.common.http.BaseClient.server_api_versions = \
+            server_api_versions
+
+        return client
 
     def _create_client(self, context):
         LOG.debug(
