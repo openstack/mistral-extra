@@ -503,7 +503,7 @@ class ZaqarAction(base.OpenStackAction):
         :type client: zaqarclient.queues.client
 
         :param queue_name: Name of the target queue.
-        :type queue_name: `six.string_type`
+        :type queue_name: `str`
 
         :param params: Filters to use for getting messages.
         :type params: **kwargs dict
@@ -523,7 +523,7 @@ class ZaqarAction(base.OpenStackAction):
         :type client: zaqarclient.queues.client
 
         :param queue_name: Name of the target queue.
-        :type queue_name: `six.string_type`
+        :type queue_name: `str`
 
         :param messages: One or more messages to post.
         :type messages: `list` or `dict`
@@ -543,7 +543,7 @@ class ZaqarAction(base.OpenStackAction):
         :type client: zaqarclient.queues.client
 
         :param queue_name: Name of the target queue.
-        :type queue_name: `six.string_type`
+        :type queue_name: `str`
 
         :param count: Number of messages to pop.
         :type count: int
@@ -563,7 +563,7 @@ class ZaqarAction(base.OpenStackAction):
         :type client: zaqarclient.queues.client
 
         :param queue_name: Name of the target queue.
-        :type queue_name: `six.string_type`
+        :type queue_name: `str`
 
         :returns: List of claims
         :rtype: `list`
@@ -579,10 +579,10 @@ class ZaqarAction(base.OpenStackAction):
         :type client: zaqarclient.queues.client
 
         :param queue_name: Name of the target queue.
-        :type queue_name: `six.string_type`
+        :type queue_name: `str`
 
         :param messages: List of messages' ids to delete.
-        :type messages: *args of `six.string_type`
+        :type messages: *args of `str`
 
         :returns: List of messages' ids that have been deleted
         :rtype: `list`
