@@ -52,8 +52,6 @@ from manilaclient import base as manila_base
 from manilaclient.v2 import client as manilaclient
 from mistralclient.api import base as mistral_base
 from mistralclient.api.v2 import client as mistralclient
-from muranoclient.common import base as murano_base
-from muranoclient.v1 import client as muranoclient
 from novaclient import base as nova_base
 from novaclient import client as novaclient
 from troveclient import base as trove_base
@@ -103,7 +101,6 @@ BASE_IRONIC_MANAGER = ironic_base.Manager
 BASE_BARBICAN_MANAGER = barbican_base.BaseEntityManager
 BASE_MANILA_MANAGER = manila_base.Manager
 BASE_MAGNUM_MANAGER = magnum_base.Manager
-BASE_MURANO_MANAGER = murano_base.Manager
 BASE_AODH_MANAGER = aodh_base.Manager
 BASE_GNOCCHI_MANAGER = gnocchi_base.Manager
 
@@ -206,10 +203,6 @@ def get_magnum_client(**kwargs):
     return magnumclient.Client()
 
 
-def get_murano_client(**kwargs):
-    return muranoclient.Client('')
-
-
 def get_aodh_client(**kwargs):
     return aodhclient.Client('')
 
@@ -237,7 +230,6 @@ CLIENTS = {
     'mistral': get_mistral_client,
     'designate': get_designate_client,
     'magnum': get_magnum_client,
-    'murano': get_murano_client,
     'aodh': get_aodh_client,
     'gnocchi': get_gnocchi_client,
     'manila': get_manila_client,
@@ -258,7 +250,6 @@ BASE_MANAGERS = {
     'mistral': BASE_MISTRAL_MANAGER,
     'designate': None,
     'magnum': BASE_MAGNUM_MANAGER,
-    'murano': BASE_MURANO_MANAGER,
     'aodh': BASE_AODH_MANAGER,
     'gnocchi': BASE_GNOCCHI_MANAGER,
     'manila': BASE_MANILA_MANAGER,

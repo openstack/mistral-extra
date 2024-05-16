@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Support for Murano and Senlin was removed, because these two projects were
+    retired.
