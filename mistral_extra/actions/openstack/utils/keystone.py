@@ -21,7 +21,6 @@ from keystoneclient import service_catalog as ks_service_catalog
 from keystoneclient.v3 import client as ks_client
 from keystoneclient.v3 import endpoints as ks_endpoints
 from oslo_config import cfg
-import six
 
 from mistral_extra.actions.openstack.utils import context
 from mistral_extra.actions.openstack.utils import exceptions
@@ -178,7 +177,7 @@ def get_endpoint_for_project(service_name=None, service_type=None,
     endpoint = None
     os_actions_endpoint_type = CONF.openstack_actions.os_actions_endpoint_type
 
-    for endpoints in six.itervalues(service_endpoints):
+    for endpoints in service_endpoints.values():
         for ep in endpoints:
             # is V3 interface?
             if 'interface' in ep:

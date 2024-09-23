@@ -16,7 +16,6 @@ import abc
 import threading
 
 import eventlet
-import six
 
 from oslo_log import log as logging
 LOG = logging.getLogger(__name__)
@@ -42,8 +41,7 @@ def add_metric(metrics, group, tags={}, fields={}):
     ))
 
 
-@six.add_metaclass(abc.ABCMeta)
-class MetricCollector(object):
+class MetricCollector(object, metaclass=abc.ABCMeta):
     """Metric collector unit interface"""
 
     @abc.abstractmethod
@@ -51,8 +49,7 @@ class MetricCollector(object):
         raise NotImplementedError()
 
 
-@six.add_metaclass(abc.ABCMeta)
-class MonitoringJob(object):
+class MonitoringJob(object, metaclass=abc.ABCMeta):
 
     def __init__(self, interval=60, first_execute=False):
         self._interval = interval
