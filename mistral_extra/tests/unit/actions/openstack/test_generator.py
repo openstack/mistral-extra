@@ -53,16 +53,14 @@ MODULE_MAPPING = {
     'designate': ['designate.quotas_list', actions.DesignateAction],
     'manila': ['manila.shares_list', actions.ManilaAction],
     'magnum': ['magnum.mservices_list', actions.MagnumAction],
-    'murano': ['murano.deployments_list', actions.MuranoAction],
     'tacker': ['tacker.list_vims', actions.TackerAction],
-    'senlin': ['senlin.get_profile', actions.SenlinAction],
     'aodh': ['aodh.alarm_list', actions.AodhAction],
     'gnocchi': ['gnocchi.metric_list', actions.GnocchiAction],
     'vitrage': ['vitrage.alarm_get', actions.VitrageAction],
     'zun': ['zun.containers_list', actions.ZunAction]
 }
 
-EXTRA_MODULES = ['neutron', 'swift', 'zaqar', 'tacker', 'senlin']
+EXTRA_MODULES = ['neutron', 'swift', 'zaqar', 'tacker']
 
 
 CONF = cfg.CONF

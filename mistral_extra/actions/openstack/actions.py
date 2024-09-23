@@ -64,12 +64,10 @@ manilaclient = _try_import('manilaclient.client')
 manila_api_versions = _try_import('manilaclient.api_versions')
 magnumclient = _try_import('magnumclient.v1.client')
 mistralclient = _try_import('mistralclient.api.v2.client')
-muranoclient = _try_import('muranoclient.v1.client')
 neutronclient = _try_import('neutronclient.v2_0.client')
 nova = _try_import('novaclient')
 novaclient = _try_import('novaclient.client')
 nova_api_versions = _try_import('novaclient.api_versions')
-senlinclient = _try_import('senlinclient.v1.client')
 swift_client = _try_import('swiftclient.client')
 swiftservice = _try_import('swiftclient.service')
 tackerclient = _try_import('tackerclient.v1_0.client')
@@ -754,34 +752,6 @@ class MagnumAction(base.OpenStackAction):
         return cls._get_client_class()(auth_url='X', magnum_url='X')
 
 
-class MuranoAction(base.OpenStackAction):
-    _service_name = 'murano'
-
-    @classmethod
-    def _get_client_class(cls):
-        return muranoclient.Client
-
-    def _create_client(self, context):
-
-        LOG.debug("Murano action security context: %s", context)
-
-        keystone_endpoint = keystone_utils.get_keystone_endpoint()
-        murano_endpoint = self.get_service_endpoint()
-
-        return self._get_client_class()(
-            endpoint=murano_endpoint.url,
-            token=context.auth_token,
-            tenant=context.project_id,
-            region_name=murano_endpoint.region,
-            auth_url=keystone_endpoint.url,
-            insecure=context.insecure
-        )
-
-    @classmethod
-    def _get_fake_client(cls):
-        return cls._get_client_class()("http://127.0.0.1:8082/")
-
-
 class TackerAction(base.OpenStackAction):
     _service_name = 'tacker'
 
@@ -808,57 +778,6 @@ class TackerAction(base.OpenStackAction):
     @classmethod
     def _get_fake_client(cls):
         return cls._get_client_class()()
-
-
-class SenlinAction(base.OpenStackAction):
-    _service_name = 'senlin'
-
-    @classmethod
-    def _get_client_class(cls):
-        return senlinclient.Client
-
-    def _create_client(self, context):
-
-        LOG.debug("Senlin action security context: %s", context)
-
-        keystone_endpoint = keystone_utils.get_keystone_endpoint()
-        senlin_endpoint = self.get_service_endpoint()
-
-        if context.is_trust_scoped and keystone_utils.is_token_trust_scoped(
-                context.auth_token):
-            if context.trust_id is None:
-                raise Exception(
-                    "'trust_id' must be provided in the admin context."
-                )
-
-            auth = ks_identity_v3.Password(
-                auth_url=keystone_endpoint.url,
-                trust_id=context.trust_id,
-                username=CONF.keystone_authtoken.username,
-                password=CONF.keystone_authtoken.password,
-                user_domain_name=CONF.keystone_authtoken.user_domain_name
-            )
-        else:
-            auth = ks_identity_v3.Token(
-                auth_url=keystone_endpoint.url,
-                token=context.auth_token,
-                project_id=context.project_id
-            )
-
-        return self._get_client_class()(
-            endpoint_url=senlin_endpoint.url,
-            session=ks_session.Session(auth=auth),
-            tenant_id=context.project_id,
-            region_name=senlin_endpoint.region,
-            auth_url=keystone_endpoint.url,
-            insecure=context.insecure
-        )
-
-    @classmethod
-    def _get_fake_client(cls):
-        # Senlin client changed interface a bit, let's skip __init__ altogether
-        class_ = cls._get_client_class()
-        return class_.__new__(class_)
 
 
 class AodhAction(base.OpenStackAction):

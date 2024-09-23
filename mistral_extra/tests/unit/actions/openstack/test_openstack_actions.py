@@ -254,21 +254,6 @@ class OpenStackActionTest(base.BaseTestCase):
         self.assertTrue(mocked().domain.get.called)
         mocked().domain.get.assert_called_once_with(domain="example.com")
 
-    @mock.patch.object(actions.MuranoAction, '_get_client')
-    def test_murano_action(self, mocked):
-        mock_ctx = mock.Mock()
-        method_name = "categories.get"
-        action_class = actions.MuranoAction
-        action_class.client_method_name = method_name
-        params = {'category_id': '1234-abcd'}
-        action = action_class(**params)
-        action.run(mock_ctx)
-
-        self.assertTrue(mocked().categories.get.called)
-        mocked().categories.get.assert_called_once_with(
-            category_id="1234-abcd"
-        )
-
     @mock.patch.object(actions.TackerAction, '_get_client')
     def test_tacker_action(self, mocked):
         mock_ctx = mock.Mock()
@@ -282,21 +267,6 @@ class OpenStackActionTest(base.BaseTestCase):
         self.assertTrue(mocked().show_vim.called)
         mocked().show_vim.assert_called_once_with(
             vim_id="1234-abcd"
-        )
-
-    @mock.patch.object(actions.SenlinAction, '_get_client')
-    def test_senlin_action(self, mocked):
-        mock_ctx = mock.Mock()
-        action_class = actions.SenlinAction
-        action_class.client_method_name = "get_cluster"
-        action = action_class(cluster_id='1234-abcd')
-
-        action.run(mock_ctx)
-
-        self.assertTrue(mocked().get_cluster.called)
-
-        mocked().get_cluster.assert_called_once_with(
-            cluster_id="1234-abcd"
         )
 
     @mock.patch.object(actions.AodhAction, '_get_client')
