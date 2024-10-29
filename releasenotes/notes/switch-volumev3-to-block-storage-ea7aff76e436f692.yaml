@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    Use ``block-storage`` as default cinder service type in mistral actions.
+    Also adding ``volumev3`` and ``block-store`` as valid aliases.
+    See lp-2085878.

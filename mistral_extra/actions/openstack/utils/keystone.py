@@ -203,7 +203,7 @@ def get_endpoint_for_project(service_name=None, service_type=None,
                 break
 
     if not endpoint:
-        raise exceptions.MistralException(
+        raise exceptions.MistralKeystoneException(
             "No endpoints found [service_name=%s, service_type=%s,"
             " region_name=%s]"
             % (service_name, service_type, region)

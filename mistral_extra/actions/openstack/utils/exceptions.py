@@ -27,3 +27,7 @@ class ApplicationContextNotFoundException(MistralException):
 
 class ActionException(MistralException):
     http_code = 400
+
+
+class MistralKeystoneException(MistralException):
+    message = "A unknown Keystone exception occurred"

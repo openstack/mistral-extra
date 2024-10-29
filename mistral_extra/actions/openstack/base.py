@@ -38,7 +38,7 @@ class OpenStackAction(actions.Action):
     _kwargs_for_run = {}
     client_method_name = None
     _service_name = None
-    _service_type = None
+    _service_types = []
     _client_class = None
 
     def __init__(self, **kwargs):
@@ -95,12 +95,28 @@ class OpenStackAction(actions.Action):
         :param context: the action context
         :return: dict that can be used to initialize service clients
         """
+        sess = None
+        for service_type in self._service_types:
+            try:
+                sess = keystone_utils.get_session_and_auth(
+                    service_name=self._service_name,
+                    service_type=service_type,
+                    region_name=self.action_region,
+                    ctx=context)
+            except exc.MistralKeystoneException:
+                # Maybe this service_type was not found
+                pass
 
-        return keystone_utils.get_session_and_auth(
-            service_name=self._service_name,
-            service_type=self._service_type,
-            region_name=self.action_region,
-            ctx=context)
+        if not sess:
+            raise exc.MistralException(
+                "Unable to get keystone session. Maybe endpoints are "
+                "missing? (service_name=%s, service_types=%s,"
+                " region_name=%s)"
+                % (self._service_name, self._service_types,
+                   self.action_region)
+            )
+
+        return sess
 
     def get_service_endpoint(self):
         """Get OpenStack service endpoint.
@@ -108,11 +124,26 @@ class OpenStackAction(actions.Action):
         'service_name' and 'service_type' are defined in specific OpenStack
         service action.
         """
-        endpoint = keystone_utils.get_endpoint_for_project(
-            service_name=self._service_name,
-            service_type=self._service_type,
-            region_name=self.action_region
-        )
+        endpoint = None
+        for service_type in self._service_types:
+            try:
+                endpoint = keystone_utils.get_endpoint_for_project(
+                    service_name=self._service_name,
+                    service_type=service_type,
+                    region_name=self.action_region
+                )
+            except exc.MistralKeystoneException:
+                # Maybe this service_type was not found
+                pass
+
+        if not endpoint:
+            raise exc.MistralException(
+                "Unable to get service endpoint. Maybe endpoints are "
+                "missing? (service_name=%s, service_types=%s,"
+                " region_name=%s)"
+                % (self._service_name, self._service_types,
+                   self.action_region)
+            )
 
         return endpoint
 

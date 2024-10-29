@@ -79,7 +79,7 @@ zun_api_versions = _try_import('zunclient.api_versions')
 
 
 class NovaAction(base.OpenStackAction):
-    _service_type = 'compute'
+    _service_types = ['compute']
 
     @classmethod
     def _get_client_class(cls):
@@ -115,7 +115,7 @@ class NovaAction(base.OpenStackAction):
 
 
 class GlanceAction(base.OpenStackAction):
-    _service_type = 'image'
+    _service_types = ['image']
 
     @classmethod
     def _get_client_class(cls):
@@ -142,7 +142,7 @@ class GlanceAction(base.OpenStackAction):
 
 class KeystoneAction(base.OpenStackAction):
 
-    _service_type = 'identity'
+    _service_types = ['identity']
 
     @classmethod
     def _get_client_class(cls):
@@ -176,7 +176,7 @@ class KeystoneAction(base.OpenStackAction):
 
 
 class HeatAction(base.OpenStackAction):
-    _service_type = 'orchestration'
+    _service_types = ['orchestration']
 
     @classmethod
     def _get_client_class(cls):
@@ -204,7 +204,7 @@ class HeatAction(base.OpenStackAction):
 
 
 class NeutronAction(base.OpenStackAction):
-    _service_type = 'network'
+    _service_types = ['network']
 
     @classmethod
     def _get_client_class(cls):
@@ -229,7 +229,14 @@ class NeutronAction(base.OpenStackAction):
 
 
 class CinderAction(base.OpenStackAction):
-    _service_type = 'volumev3'
+    # NOTE(amorin) block-storage is the official one, but since years,
+    # cinder has been using volumev3 as default. The effort to switch
+    # the default to block-storage has been done during epoxy cycle.
+    # Also adding block-store as another alias.
+    # See all service types here:
+    # https://service-types.openstack.org/
+    # lp-2085878
+    _service_types = ['block-storage', 'volumev3', 'block-store']
 
     @classmethod
     def _get_client_class(cls):
@@ -266,7 +273,7 @@ class CinderAction(base.OpenStackAction):
 
 
 class MistralAction(base.OpenStackAction):
-    _service_type = 'workflowv2'
+    _service_types = ['workflowv2']
 
     @classmethod
     def _get_client_class(cls):
@@ -293,7 +300,7 @@ class MistralAction(base.OpenStackAction):
 
 
 class TroveAction(base.OpenStackAction):
-    _service_type = 'database'
+    _service_types = ['database']
 
     @classmethod
     def _get_client_class(cls):
@@ -455,7 +462,7 @@ class SwiftServiceAction(base.OpenStackAction):
 
 
 class ZaqarAction(base.OpenStackAction):
-    _service_type = 'messaging'
+    _service_types = ['messaging']
 
     @classmethod
     def _get_client_class(cls):
@@ -590,7 +597,7 @@ class ZaqarAction(base.OpenStackAction):
 
 
 class BarbicanAction(base.OpenStackAction):
-    _service_type = 'key-manager'
+    _service_types = ['key-manager']
 
     @classmethod
     def _get_client_class(cls):
@@ -700,7 +707,7 @@ class BarbicanAction(base.OpenStackAction):
 
 
 class DesignateAction(base.OpenStackAction):
-    _service_type = 'dns'
+    _service_types = ['dns']
 
     @classmethod
     def _get_client_class(cls):
@@ -781,7 +788,7 @@ class TackerAction(base.OpenStackAction):
 
 
 class AodhAction(base.OpenStackAction):
-    _service_type = 'alarming'
+    _service_types = ['alarming']
 
     @classmethod
     def _get_client_class(cls):
@@ -812,7 +819,7 @@ class AodhAction(base.OpenStackAction):
 
 
 class GnocchiAction(base.OpenStackAction):
-    _service_type = 'metric'
+    _service_types = ['metric']
 
     @classmethod
     def _get_client_class(cls):
@@ -846,7 +853,7 @@ class GnocchiAction(base.OpenStackAction):
 
 
 class VitrageAction(base.OpenStackAction):
-    _service_type = 'rca'
+    _service_types = ['rca']
 
     @classmethod
     def _get_client_class(cls):
@@ -918,7 +925,7 @@ class ZunAction(base.OpenStackAction):
 
 
 class ManilaAction(base.OpenStackAction):
-    _service_type = 'sharev2'
+    _service_types = ['sharev2']
 
     @classmethod
     def _get_client_class(cls):
