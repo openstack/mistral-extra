@@ -337,7 +337,7 @@ class TroveAction(base.OpenStackAction):
 
 
 class IronicAction(base.OpenStackAction):
-    _service_name = 'ironic'
+    _service_types = ['baremetal']
 
     @classmethod
     def _get_client_class(cls):
@@ -407,7 +407,7 @@ class BaremetalIntrospectionAction(base.OpenStackAction):
 
 
 class SwiftAction(base.OpenStackAction):
-    _service_name = 'swift'
+    _service_types = ['object-store']
 
     @classmethod
     def _get_client_class(cls):
@@ -433,7 +433,7 @@ class SwiftAction(base.OpenStackAction):
 
 
 class SwiftServiceAction(base.OpenStackAction):
-    _service_name = 'swift'
+    _service_types = ['object-store']
 
     @classmethod
     def _get_client_class(cls):
@@ -760,7 +760,7 @@ class MagnumAction(base.OpenStackAction):
 
 
 class TackerAction(base.OpenStackAction):
-    _service_name = 'tacker'
+    _service_types = ['nfv-orchestration']
 
     @classmethod
     def _get_client_class(cls):
@@ -883,7 +883,7 @@ class VitrageAction(base.OpenStackAction):
 
 
 class ZunAction(base.OpenStackAction):
-    _service_name = 'appcontainer'
+    _service_types = ['application-container']
 
     @classmethod
     def _get_client_class(cls):
