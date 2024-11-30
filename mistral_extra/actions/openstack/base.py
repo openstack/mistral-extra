@@ -96,15 +96,28 @@ class OpenStackAction(actions.Action):
         :return: dict that can be used to initialize service clients
         """
         sess = None
-        for service_type in self._service_types:
+        # We try to find the session based on service_types first
+        if self._service_types:
+            for service_type in self._service_types:
+                try:
+                    sess = keystone_utils.get_session_and_auth(
+                        service_name=None,
+                        service_type=service_type,
+                        region_name=self.action_region,
+                        ctx=context)
+                except exc.MistralKeystoneException:
+                    # Maybe this service_type was not found
+                    pass
+        else:
+            # Let's use service_name as fallback
             try:
                 sess = keystone_utils.get_session_and_auth(
                     service_name=self._service_name,
-                    service_type=service_type,
+                    service_type=None,
                     region_name=self.action_region,
                     ctx=context)
             except exc.MistralKeystoneException:
-                # Maybe this service_type was not found
+                # Maybe this service_name was not found
                 pass
 
         if not sess:
@@ -125,15 +138,28 @@ class OpenStackAction(actions.Action):
         service action.
         """
         endpoint = None
-        for service_type in self._service_types:
+        # We try to find the endpoint based on service_types first
+        if self._service_types:
+            for service_type in self._service_types:
+                try:
+                    endpoint = keystone_utils.get_endpoint_for_project(
+                        service_name=None,
+                        service_type=service_type,
+                        region_name=self.action_region
+                    )
+                except exc.MistralKeystoneException:
+                    # Maybe this service_type was not found
+                    pass
+        else:
+            # Let's use service_name as fallback
             try:
                 endpoint = keystone_utils.get_endpoint_for_project(
                     service_name=self._service_name,
-                    service_type=service_type,
+                    service_type=None,
                     region_name=self.action_region
                 )
             except exc.MistralKeystoneException:
-                # Maybe this service_type was not found
+                # Maybe this service_name was not found
                 pass
 
         if not endpoint:
