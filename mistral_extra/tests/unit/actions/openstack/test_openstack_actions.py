@@ -228,19 +228,6 @@ class OpenStackActionTest(base.BaseTestCase):
         mocked().queue.assert_called_once_with('foo')
         mocked().queue().messages.assert_called_once_with()
 
-    @mock.patch.object(actions.BarbicanAction, '_get_client')
-    def test_barbican_action(self, mocked):
-        mock_ctx = mock.Mock()
-        method_name = "orders_list"
-        action_class = actions.BarbicanAction
-        action_class.client_method_name = method_name
-        params = {'limit': 5}
-        action = action_class(**params)
-        action.run(mock_ctx)
-
-        self.assertTrue(mocked().orders_list.called)
-        mocked().orders_list.assert_called_once_with(limit=5)
-
     @mock.patch.object(actions.DesignateAction, '_get_client')
     def test_designate_action(self, mocked):
         mock_ctx = mock.Mock()
