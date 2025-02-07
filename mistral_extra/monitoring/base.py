@@ -14,8 +14,7 @@
 
 import abc
 import threading
-
-import eventlet
+import time
 
 from oslo_log import log as logging
 LOG = logging.getLogger(__name__)
@@ -75,7 +74,7 @@ class MonitoringJob(object, metaclass=abc.ABCMeta):
             )
 
             if self._was_executed:
-                eventlet.sleep(self._interval)
+                time.sleep(self._interval)
 
             try:
                 self._was_executed = True
