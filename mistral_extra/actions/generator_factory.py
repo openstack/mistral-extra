@@ -20,7 +20,7 @@ from mistral_extra.actions.openstack.action_generator import base
 SUPPORTED_MODULES = [
     'Nova', 'Glance', 'Keystone', 'Heat', 'Neutron', 'Cinder',
     'Trove', 'Ironic', 'Baremetal Introspection', 'Swift', 'SwiftService',
-    'Zaqar', 'Barbican', 'Mistral', 'Designate', 'Magnum', 'Tacker',
+    'Zaqar', 'Mistral', 'Designate', 'Magnum',
     'Aodh', 'Gnocchi', 'Vitrage', 'Zun', 'Manila'
 ]
 
