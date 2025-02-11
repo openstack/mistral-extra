@@ -1,6 +1,4 @@
 #!/bin/bash
-# Hack for eventlet case sensitivity problem
-# (https://bitbucket.org/eventlet/eventlet/issue/81/stdlib-queue-not-found-from-within).
 mkdir -p /opt/mistral-extra/.tox
 mkdir -p /tmp/.tox
 mount --bind /tmp/.tox /opt/mistral-extra/.tox
