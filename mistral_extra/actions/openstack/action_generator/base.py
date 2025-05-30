@@ -12,12 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import importlib.resources
 import json
 import os
 
 from oslo_config import cfg
 from oslo_log import log as logging
-import pkg_resources as pkg
 
 from mistral_extra.actions import action_generator
 from mistral_extra import version
@@ -43,8 +43,7 @@ def get_mapping():
         mapping_file_path = CONF.openstack_actions_mapping_path
     else:
         path = CONF.openstack_actions_mapping_path
-
-        mapping_file_path = pkg.resource_filename(package, path)
+        mapping_file_path = importlib.resources.files(package).joinpath(path)
 
     LOG.info(
         "Processing OpenStack action mapping from file: %s",
