@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Update the create_instance default workflow to simplify it.
+    Now it will use names instead of ID as input.
+    Also get rid of floating IP and wait_ssh tasks for simplicity.
