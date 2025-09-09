@@ -1006,8 +1006,6 @@
         "members_get": "members.get",
         "members_list": "members.list",
         "members_update": "members.update",
-        "services_find": "services.find",
-        "services_list": "services.list",
         "tasks_find": "tasks.find",
         "tasks_get": "tasks.get",
         "tasks_list": "tasks.list",
