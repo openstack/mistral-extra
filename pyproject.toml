@@ -40,7 +40,7 @@ packages = [
 [project.entry-points."mistral.generators"]
 generators = "mistral_extra.actions.generator_factory:all_generators"
 
-[project.entry-points."console_scripts"]
+[project.scripts]
 mistral-monitoring = "mistral_extra.monitoring.launch:main"
 
 [project.entry-points."mistral.preinstalled_workflows"]
