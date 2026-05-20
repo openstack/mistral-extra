@@ -32,7 +32,7 @@ Homepage = "https://docs.openstack.org/mistral/latest/"
 Repository = "https://opendev.org/openstack/mistral-extra"
 
 [tool.setuptools.packages.find]
-include = ["mistral_extra"]
+include = ["mistral_extra*"]
 
 [project.entry-points."mistral.generators"]
 generators = "mistral_extra.actions.generator_factory:all_generators"
