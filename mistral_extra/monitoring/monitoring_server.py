@@ -13,11 +13,11 @@
 #  under the License.
 
 import datetime
+from importlib.metadata import entry_points
 
 from flask import Flask
 from flask import jsonify
 from flask import Response
-from importlib_metadata import entry_points
 
 from mistral.service import base as service_base
 from mistral_extra.monitoring.prometheus import format_to_prometheus
