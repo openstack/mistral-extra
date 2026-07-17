@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Support for Vitrage actions has been removed, because  the Vitrage project
+    was deprrecated.

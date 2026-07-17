@@ -54,7 +54,6 @@ MODULE_MAPPING = {
     'magnum': ['magnum.mservices_list', actions.MagnumAction],
     'aodh': ['aodh.alarm_list', actions.AodhAction],
     'gnocchi': ['gnocchi.metric_list', actions.GnocchiAction],
-    'vitrage': ['vitrage.alarm_get', actions.VitrageAction],
     'zun': ['zun.containers_list', actions.ZunAction]
 }
 

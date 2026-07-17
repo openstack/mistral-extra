@@ -1052,27 +1052,6 @@
         "certificates_rotate_ca": "certificates.rotate_ca",
         "mservices_list": "mservices.list"
     },
-    "vitrage": {
-        "_comment": "It uses vitrageclient.v1.",
-        "alarm_list": "alarm.list",
-        "alarm_get": "alarm.get",
-        "alarm_count": "alarm.count",
-        "event_post": "event.post",
-        "healthcheck_get": "healthcheck.get",
-        "rca_get": "rca.get",
-        "resource_list": "resource.list",
-        "resource_get": "resource.get",
-        "template_list": "template.list",
-        "template_show": "template.show",
-        "template_add": "template.add",
-        "template_delete": "template.delete",
-        "template_validate": "template.validate",
-        "topology_get": "topology.get",
-        "webhook_list": "webhook.list",
-        "webhook_show": "webhook.show",
-        "webhook_add": "webhook.add",
-        "webhook_delete": "webhook.delete"
-    },
     "zun":{
         "_comment": "It uses zunclient.v1. ",
         "containers_add_security_group": "containers.add_security_group",
