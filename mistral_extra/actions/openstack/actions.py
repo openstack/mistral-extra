@@ -43,8 +43,7 @@ def _try_import(module_name):
     try:
         return importutils.try_import(module_name)
     except Exception as e:
-        msg = 'Unable to load module "%s". %s' % (module_name, str(e))
-        LOG.error(msg)
+        LOG.error('Unable to load module "%s". %s', module_name, e)
         return None
 
 
