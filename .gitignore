@@ -40,8 +40,5 @@ AUTHORS
 .pydevproject
 .idea
 .DS_Store
-etc/mistral.conf
 tools/lintstack.head.py
 tools/pylint_exceptions
-
-/.vagrant/
