@@ -1,6 +1,7 @@
 {
     "_comment": "Mapping OpenStack action namespaces to all its actions. Each action name is mapped to python-client method name in this namespace.",
     "nova": {
+        "_comment": "Nested comments must be stripped from the mapping.",
         "servers_get": "servers.get",
         "servers_find": "servers.find",
         "volumes_delete_server_volume": "volumes.delete_server_volume"
