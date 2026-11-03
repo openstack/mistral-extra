@@ -1,0 +1,11 @@
+---
+fixes:
+  - |
+    Removed the ``keystone.role_assignments_create``,
+    ``keystone.role_assignments_delete``, ``keystone.role_assignments_find``,
+    ``keystone.role_assignments_get``, ``keystone.role_assignments_update``
+    and ``keystone.trusts_update`` actions. keystoneclient does not implement
+    these methods, so the actions always failed. Use ``keystone.roles_grant``
+    and ``keystone.roles_revoke`` to manage role assignments, and
+    ``keystone.role_assignments_list`` to list them. See `bug 1624445
+    <https://bugs.launchpad.net/mistral/+bug/1624445>`_.

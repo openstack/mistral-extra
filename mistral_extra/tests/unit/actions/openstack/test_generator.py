@@ -107,6 +107,20 @@ class GeneratorTest(base.BaseTestCase):
                 mapping['nova']
             )
 
+    def test_keystone_role_assignments_only_maps_list(self):
+        keystone = generator_base.get_mapping()['keystone']
+
+        self.assertEqual(
+            {'role_assignments_list': 'role_assignments.list'},
+            {k: v for k, v in keystone.items()
+             if k.startswith('role_assignments_')}
+        )
+
+    def test_keystone_trusts_update_not_mapped(self):
+        keystone = generator_base.get_mapping()['keystone']
+
+        self.assertNotIn('trusts_update', keystone)
+
     def test_prepare_action_inputs(self):
         for origin, expected in PREPARE_INPUTS_CASES:
             self.assertEqual(
