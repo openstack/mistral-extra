@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    The configuration options defined by mistral-extra, such as
+    ``[openstack_actions]/os_actions_endpoint_type``, are now exposed through
+    the ``mistral_extra.config`` ``oslo.config.opts`` entry point, so
+    ``oslo-config-generator`` can include them in sample configuration files.
+    See `bug 1648646 <https://bugs.launchpad.net/mistral/+bug/1648646>`_.

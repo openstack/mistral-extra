@@ -115,3 +115,12 @@ CONF.register_opts(openstack_actions_opts, group=OPENSTACK_ACTIONS_GROUP)
 CONF.register_opt(os_actions_mapping_path)
 CONF.register_opts(monitoring_opts, group=MONITORING_GROUP)
 CONF.register_opts(recovery_job_opts, group=RECOVERY_JOB_GROUP)
+
+
+def list_opts():
+    return [
+        (OPENSTACK_ACTIONS_GROUP, openstack_actions_opts),
+        (MONITORING_GROUP, monitoring_opts),
+        (RECOVERY_JOB_GROUP, recovery_job_opts),
+        (None, [os_actions_mapping_path]),
+    ]

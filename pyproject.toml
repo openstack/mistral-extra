@@ -37,6 +37,9 @@ include = ["mistral_extra*"]
 [project.entry-points."mistral.generators"]
 generators = "mistral_extra.actions.generator_factory:all_generators"
 
+[project.entry-points."oslo.config.opts"]
+"mistral_extra.config" = "mistral_extra.config:list_opts"
+
 [project.scripts]
 mistral-monitoring = "mistral_extra.monitoring.launch:main"
 
