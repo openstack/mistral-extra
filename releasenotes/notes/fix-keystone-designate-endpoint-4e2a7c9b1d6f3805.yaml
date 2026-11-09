@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Keystone and Designate actions now send their requests to the endpoint
+    found in the service catalog. Previously they used the unversioned
+    Keystone URL, so Keystone actions failed with 404 (for example
+    ``/users`` instead of ``/v3/users``). Note that for now it's not doing
+    any discovery of endpoints, this may be done in a future patch.

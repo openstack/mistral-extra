@@ -14,6 +14,8 @@
 
 from unittest import mock
 
+from keystoneauth1 import session as ks_session
+from keystoneauth1 import token_endpoint
 from mistral_extra.actions.openstack import actions
 from mistral_extra.actions.openstack import base as actions_base
 from oslo_config import cfg
@@ -86,6 +88,42 @@ class MistralActionClientTest(base.BaseTestCase):
 
         self.assertEqual('http://10.0.0.1:8989/v2',
                          client.workbooks.http_client.base_url)
+
+
+class EndpointOverrideTest(base.BaseTestCase):
+    def _request_url(self, action_cls, call):
+        session = ks_session.Session(
+            auth=token_endpoint.Token('http://keystone.test', 'token')
+        )
+        endpoint = mock.Mock(url='http://service.test/v9/')
+        with mock.patch.object(action_cls, 'get_service_endpoint',
+                               return_value=endpoint), \
+                mock.patch.object(action_cls, 'get_session_and_auth',
+                                  return_value={'session': session}), \
+                mock.patch.object(ks_session.Session, 'request') as req:
+            req.return_value = mock.Mock(
+                status_code=200, headers={}, json=mock.Mock(return_value={})
+            )
+            try:
+                call(action_cls()._create_client(mock.Mock()))
+            except Exception:
+                pass
+
+        return req.call_args.kwargs.get('endpoint_override')
+
+    def test_keystone_uses_catalog_endpoint(self):
+        self.assertEqual(
+            'http://service.test/v9/',
+            self._request_url(actions.KeystoneAction,
+                              lambda c: c.users.list())
+        )
+
+    def test_designate_uses_catalog_endpoint(self):
+        self.assertEqual(
+            'http://service.test/v9/',
+            self._request_url(actions.DesignateAction,
+                              lambda c: c.zones.list())
+        )
 
 
 class TestImport(base.BaseTestCase):

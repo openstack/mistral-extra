@@ -155,7 +155,7 @@ class KeystoneAction(base.OpenStackAction):
         session_and_auth = self.get_session_and_auth(context)
 
         return self._get_client_class()(
-            endpoint=keystone_endpoint.url,
+            endpoint_override=keystone_endpoint.url,
             session=session_and_auth['session']
         )
 
@@ -714,9 +714,12 @@ class DesignateAction(base.OpenStackAction):
     def _create_client(self, context):
         LOG.debug("Designate action security context: %s", context)
 
+        designate_endpoint = self.get_service_endpoint()
+
         session_and_auth = self.get_session_and_auth(context)
 
         client = self._get_client_class()(
+            endpoint_override=designate_endpoint.url,
             session=session_and_auth['session']
         )
 
