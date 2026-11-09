@@ -76,6 +76,15 @@ zunclient = _try_import('zunclient.v1.client')
 zun_api_versions = _try_import('zunclient.api_versions')
 
 
+def _versioned_url(url, version):
+    url = url.rstrip('/')
+
+    if not url.endswith('/' + version):
+        url += '/' + version
+
+    return url
+
+
 class NovaAction(base.OpenStackAction):
     _service_types = ['compute']
 
@@ -155,7 +164,7 @@ class KeystoneAction(base.OpenStackAction):
         session_and_auth = self.get_session_and_auth(context)
 
         return self._get_client_class()(
-            endpoint_override=keystone_endpoint.url,
+            endpoint_override=_versioned_url(keystone_endpoint.url, 'v3'),
             session=session_and_auth['session']
         )
 
@@ -719,7 +728,7 @@ class DesignateAction(base.OpenStackAction):
         session_and_auth = self.get_session_and_auth(context)
 
         client = self._get_client_class()(
-            endpoint_override=designate_endpoint.url,
+            endpoint_override=_versioned_url(designate_endpoint.url, 'v2'),
             session=session_and_auth['session']
         )
 

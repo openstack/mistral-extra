@@ -91,11 +91,12 @@ class MistralActionClientTest(base.BaseTestCase):
 
 
 class EndpointOverrideTest(base.BaseTestCase):
-    def _request_url(self, action_cls, call):
+    def _request_url(self, action_cls, call,
+                     catalog_url='http://service.test/'):
         session = ks_session.Session(
             auth=token_endpoint.Token('http://keystone.test', 'token')
         )
-        endpoint = mock.Mock(url='http://service.test/v9/')
+        endpoint = mock.Mock(url=catalog_url)
         with mock.patch.object(action_cls, 'get_service_endpoint',
                                return_value=endpoint), \
                 mock.patch.object(action_cls, 'get_session_and_auth',
@@ -112,18 +113,22 @@ class EndpointOverrideTest(base.BaseTestCase):
         return req.call_args.kwargs.get('endpoint_override')
 
     def test_keystone_uses_catalog_endpoint(self):
-        self.assertEqual(
-            'http://service.test/v9/',
-            self._request_url(actions.KeystoneAction,
-                              lambda c: c.users.list())
-        )
+        for url in ('http://service.test/identity',
+                    'http://service.test/identity/v3/'):
+            self.assertEqual(
+                'http://service.test/identity/v3',
+                self._request_url(actions.KeystoneAction,
+                                  lambda c: c.users.list(), url)
+            )
 
     def test_designate_uses_catalog_endpoint(self):
-        self.assertEqual(
-            'http://service.test/v9/',
-            self._request_url(actions.DesignateAction,
-                              lambda c: c.zones.list())
-        )
+        for url in ('http://service.test:9001/',
+                    'http://service.test:9001/v2'):
+            self.assertEqual(
+                'http://service.test:9001/v2',
+                self._request_url(actions.DesignateAction,
+                                  lambda c: c.zones.list(), url)
+            )
 
 
 class TestImport(base.BaseTestCase):

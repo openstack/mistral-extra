@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Keystone and Designate actions append the API version (``/v3`` and
+    ``/v2``) to the catalog endpoint when it is missing. The previous fix
+    sent requests to the unversioned catalog URL, so Keystone actions
+    failed with 404 on deployments such as devstack, whose identity catalog
+    entry has no version.
